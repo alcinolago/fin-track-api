@@ -1,11 +1,6 @@
 package com.lagotech.fintrack.domain.model
 
-import jakarta.persistence.Entity
-import jakarta.persistence.Table
-import jakarta.persistence.Id
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
-import jakarta.persistence.Column
+import jakarta.persistence.*
 import java.time.LocalDateTime
 
 @Entity
@@ -14,20 +9,22 @@ data class BankAccount(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long = 0,
+    var id: Long = 0,
 
     @Column(name = "bank_name", nullable = false, length = 100)
-    val bankName: String,
+    var bankName: String,
 
     @Column(name = "account_number", nullable = false, length = 20)
-    val accountNumber: String,
+    var accountNumber: String,
 
     @Column(name = "account_digit", nullable = false, length = 5)
-    val accountDigit: String,
+    var accountDigit: String,
 
     @Column(name = "agency", nullable = false, length = 10)
-    val agency: String,
+    var agency: String,
 
     @Column(name = "created_at", nullable = false)
-    val createdAt: LocalDateTime = LocalDateTime.now()
-)
+    var createdAt: LocalDateTime = LocalDateTime.now()
+) {
+    constructor() : this(0, "", "", "", "", LocalDateTime.now())
+}
