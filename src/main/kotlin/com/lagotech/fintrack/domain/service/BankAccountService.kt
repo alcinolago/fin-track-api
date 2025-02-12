@@ -17,7 +17,7 @@ class BankAccountService(
     }
 
     fun findByName(name: String): List<BankAccountDTO> {
-        return respository.findByNameContaining(name)
+        return respository.findByBankNameContaining(name)
             .map { entityToDTOMapper.parseObject(it, BankAccountDTO::class.java) }
     }
 
@@ -34,7 +34,7 @@ class BankAccountService(
     }
 
     fun existsByName(name: String): Boolean {
-        return respository.existsByName(name)
+        return respository.existsByBankName(name)
     }
 
     fun delete(bankAccount: BankAccount) {

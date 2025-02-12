@@ -79,17 +79,4 @@ class TransactionServiceTest {
         val result = service.findAll()
         assertNotNull(result)
     }
-
-    @Test
-    fun findByBankAccountId() {
-        val id = 1L
-        val entity = transactionMock.getTransactionList()
-        val expectedTransaction = transactionMock.getTransactionDTOList()
-
-        `when`(repository.findByBankAccountId(id)).thenReturn(entity)
-        `when`(entityToDTOMapper.parseListObjects(entity,TransactionDTO::class.java)).thenReturn(expectedTransaction)
-
-        val result = service.findByBankAccountId(id)
-        assertNotNull(result)
-    }
 }

@@ -31,9 +31,4 @@ class TransactionService(
     fun delete(transaction: Transaction) {
         repository.delete(transaction)
     }
-
-    fun findByBankAccountId(bankAccountId: Long): List<TransactionDTO> {
-        return repository.findByBankAccountId(bankAccountId)
-            .let { entityToDTOMapper.parseListObjects(it, TransactionDTO::class.java) }
-    }
 }

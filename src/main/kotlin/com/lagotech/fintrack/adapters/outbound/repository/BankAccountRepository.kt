@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface BankAccountRepository : JpaRepository<BankAccount, Long?> {
-    fun findByNameContaining(name: String): List<BankAccountDTO>
-    fun existsByName(name: String): Boolean
+    fun findByBankNameContaining(name: String): List<BankAccountDTO>
+    fun existsByBankName(name: String): Boolean
 }
