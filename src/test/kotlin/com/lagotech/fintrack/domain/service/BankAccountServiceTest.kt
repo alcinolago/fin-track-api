@@ -2,11 +2,13 @@ package com.lagotech.fintrack.domain.service
 
 import com.lagotech.fintrack.adapters.outbound.repository.BankAccountRepository
 import com.lagotech.fintrack.application.dto.BankAccountDTO
-import com.lagotech.fintrack.application.dto.ExpenseCategoryDTO
+import com.lagotech.fintrack.application.exception.ResourceNotFoundException
 import com.lagotech.fintrack.application.mapper.EntityToDTOMapper
+import com.lagotech.fintrack.domain.model.BankAccount
 import com.lagotech.fintrack.mocks.BankAccountMock
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
@@ -48,14 +50,41 @@ class BankAccountServiceTest {
     }
 
     @Test
+    fun save_ShouldReturnException_WhenBankAlreadyExists() {
+        val bankAccount = mockBankAccount.mockBankAccount()
+
+        `when`(repository.existsByBankName(bankAccount.bankName)).thenReturn(true)
+
+        val exception = assertThrows<ResourceNotFoundException> {
+            service.save(bankAccount)
+        }
+
+        assertEquals("Banco com o nome ${bankAccount.bankName} já existe", exception.message)
+    }
+
+    @Test
     fun findByName() {
         val bankName = "Itau"
         val bankAccountList = mockBankAccount.mockBankAccountDTOList()
 
-        `when`(repository.findByNameContaining(bankName)).thenReturn(bankAccountList)
+        `when`(repository.findByBankNameContaining(bankName)).thenReturn(bankAccountList)
 
         val result = service.findByName(bankName)
         assertNotNull(result)
+    }
+
+    @Test
+    fun findByName_ShouldReturnException_WhenNotFound() {
+        val bankName = ""
+        val bankAccountList = emptyList<BankAccountDTO>()
+
+        `when`(repository.findByBankNameContaining(bankName)).thenReturn(bankAccountList)
+
+
+        val exception = assertThrows<ResourceNotFoundException> {
+            service.findByName(bankName)
+        }
+        assertEquals("Recurso não encontrado", exception.message)
     }
 
     @Test
@@ -66,6 +95,19 @@ class BankAccountServiceTest {
 
         val result = service.findAll()
         assertNotNull(result)
+    }
+
+    @Test
+    fun findAll_ShouldReturnException_WhenNotFoundResources() {
+        val bankAccountList = emptyList<BankAccount>()
+
+        `when`(repository.findAll()).thenReturn(bankAccountList)
+
+        val exception = assertThrows<ResourceNotFoundException> {
+            service.findAll()
+        }
+
+        assertEquals("Recurso não encontrado", exception.message)
     }
 
     @Test
@@ -84,12 +126,36 @@ class BankAccountServiceTest {
     }
 
     @Test
-    fun existsByName() {
+    fun findById_ShouldReturnException_WhenNotFoundById() {
+        val id = 0L
+
+        `when`(repository.findById(id)).thenReturn(Optional.empty())
+
+        val exception = assertThrows<ResourceNotFoundException> {
+            service.findById(id)
+        }
+
+        assertEquals("Recurso não encontrado", exception.message)
+    }
+
+    @Test
+    fun existsByBankName() {
         val bankName = "Itau"
 
-        `when`(repository.existsByName(bankName)).thenReturn(true)
+        `when`(repository.existsByBankName(bankName)).thenReturn(true)
 
-        val result = service.existsByName(bankName)
+        val result = service.existsByBankName(bankName)
         assertNotNull(result)
+    }
+
+    @Test
+    fun existsByBankName_ShouldReturnFalse_WhenBankDoesNotExist() {
+        val bankName = "NotExists"
+
+        `when`(repository.existsByBankName(bankName)).thenReturn(false)
+
+        val result = service.existsByBankName(bankName)
+
+        assertEquals(false, result)
     }
 }

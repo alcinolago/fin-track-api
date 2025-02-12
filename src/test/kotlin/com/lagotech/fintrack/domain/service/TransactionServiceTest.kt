@@ -3,6 +3,7 @@ package com.lagotech.fintrack.domain.service
 import com.lagotech.fintrack.adapters.outbound.repository.ExpenseCategoryRepository
 import com.lagotech.fintrack.adapters.outbound.repository.TransactionRepository
 import com.lagotech.fintrack.application.dto.TransactionDTO
+import com.lagotech.fintrack.application.exception.ResourceNotFoundException
 import com.lagotech.fintrack.application.mapper.EntityToDTOMapper
 import com.lagotech.fintrack.domain.model.Transaction
 import com.lagotech.fintrack.mocks.BankAccountMock
@@ -10,6 +11,7 @@ import com.lagotech.fintrack.mocks.ExpenseCategoryMock
 import com.lagotech.fintrack.mocks.TransactionMock
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
@@ -69,6 +71,19 @@ class TransactionServiceTest {
     }
 
     @Test
+    fun findById_ShoudReturnException_WhenNotFoundById() {
+        val id = 0L
+
+        `when`(repository.findById(id)).thenReturn(Optional.empty())
+
+        val exception = assertThrows<ResourceNotFoundException> {
+            service.findById(id)
+        }
+
+        assertEquals("Transaction with id $id not found", exception.message)
+    }
+
+    @Test
     fun findAll() {
         val transactions = transactionMock.getTransactionList()
         val expectedTransactionsList = transactionMock.getTransactionDTOList()
@@ -78,5 +93,17 @@ class TransactionServiceTest {
 
         val result = service.findAll()
         assertNotNull(result)
+    }
+
+    @Test
+    fun findAll_ShouldReturnException_WhenNotFoundResources() {
+
+        `when`(repository.findAll()).thenReturn(emptyList())
+
+        val exception = assertThrows<ResourceNotFoundException> {
+            service.findAll()
+        }
+
+        assertEquals("Recurso não encontrado", exception.message)
     }
 }

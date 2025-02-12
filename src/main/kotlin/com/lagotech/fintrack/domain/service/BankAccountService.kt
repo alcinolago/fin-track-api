@@ -2,42 +2,58 @@ package com.lagotech.fintrack.domain.service
 
 import com.lagotech.fintrack.adapters.outbound.repository.BankAccountRepository
 import com.lagotech.fintrack.application.dto.BankAccountDTO
+import com.lagotech.fintrack.application.exception.ResourceNotFoundException
 import com.lagotech.fintrack.application.mapper.EntityToDTOMapper
 import com.lagotech.fintrack.domain.model.BankAccount
 import org.springframework.stereotype.Service
 
 @Service
 class BankAccountService(
-    private val respository: BankAccountRepository,
+    private val repository: BankAccountRepository,
     private val entityToDTOMapper: EntityToDTOMapper
 ) {
 
     fun save(bankAccount: BankAccount): BankAccountDTO {
-        return entityToDTOMapper.parseObject(respository.save(bankAccount), BankAccountDTO::class.java)
+
+        if (existsByBankName(bankAccount.bankName)) {
+            throw ResourceNotFoundException("Banco com o nome ${bankAccount.bankName} já existe")
+        }
+
+        val savedBankAccount = repository.save(bankAccount)
+
+        return entityToDTOMapper.parseObject(savedBankAccount, BankAccountDTO::class.java)
     }
 
     fun findByName(name: String): List<BankAccountDTO> {
-        return respository.findByBankNameContaining(name)
-            .map { entityToDTOMapper.parseObject(it, BankAccountDTO::class.java) }
+        val bankAccounts = repository.findByBankNameContaining(name)
+
+        if(bankAccounts.isEmpty()){
+            throw ResourceNotFoundException("Recurso não encontrado")
+        }
+        return entityToDTOMapper.parseListObjects(bankAccounts, BankAccountDTO::class.java)
     }
 
     fun findAll(): List<BankAccountDTO> {
-        return respository.findAll().let { entityToDTOMapper.parseListObjects(it, BankAccountDTO::class.java) }
+
+        val bankAccopunts = repository.findAll()
+
+        if (bankAccopunts.isEmpty()) {
+            throw ResourceNotFoundException("Recurso não encontrado")
+        }
+        return entityToDTOMapper.parseListObjects(bankAccopunts, BankAccountDTO::class.java)
     }
 
     fun findById(id: Long): BankAccountDTO {
-        val bankAccount = respository.findById(id)
-            .orElseThrow { IllegalArgumentException("Conta bancária com ID $id não encontrada") }
-
-
-        return entityToDTOMapper.parseObject(bankAccount, BankAccountDTO::class.java)
+        return repository.findById(id)
+            .orElseThrow { ResourceNotFoundException("Recurso não encontrado") }
+            .let { bankAccount -> entityToDTOMapper.parseObject(bankAccount, BankAccountDTO::class.java) }
     }
 
-    fun existsByName(name: String): Boolean {
-        return respository.existsByBankName(name)
+    fun existsByBankName(name: String): Boolean {
+        return repository.existsByBankName(name)
     }
 
     fun delete(bankAccount: BankAccount) {
-        respository.delete(bankAccount)
+        repository.delete(bankAccount)
     }
 }

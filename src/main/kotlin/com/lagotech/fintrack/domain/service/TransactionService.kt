@@ -2,6 +2,7 @@ package com.lagotech.fintrack.domain.service
 
 import com.lagotech.fintrack.adapters.outbound.repository.TransactionRepository
 import com.lagotech.fintrack.application.dto.TransactionDTO
+import com.lagotech.fintrack.application.exception.ResourceNotFoundException
 import com.lagotech.fintrack.application.mapper.EntityToDTOMapper
 import com.lagotech.fintrack.domain.model.Transaction
 import org.springframework.stereotype.Service
@@ -19,13 +20,20 @@ class TransactionService(
     fun findById(id: Long): TransactionDTO {
 
         val transaction = repository.findById(id)
-            .orElseThrow { IllegalArgumentException("Transaction with id $id not found") }
+            .orElseThrow { ResourceNotFoundException("Transaction with id $id not found") }
 
         return entityToDTOMapper.parseObject(transaction, TransactionDTO::class.java)
     }
 
     fun findAll(): List<TransactionDTO> {
-        return repository.findAll().let { entityToDTOMapper.parseListObjects(it, TransactionDTO::class.java) }
+
+        val transactions = repository.findAll()
+
+        if(transactions.isEmpty()){
+            throw ResourceNotFoundException("Recurso não encontrado")
+        }
+
+        return entityToDTOMapper.parseListObjects(transactions, TransactionDTO::class.java)
     }
 
     fun delete(transaction: Transaction) {
