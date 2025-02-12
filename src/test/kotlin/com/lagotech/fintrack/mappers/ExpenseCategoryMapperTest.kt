@@ -1,22 +1,26 @@
 package com.lagotech.fintrack.mappers
 
+import com.lagotech.fintrack.application.mapper.EntityToDTOMapper
+import com.lagotech.fintrack.application.mapper.EntityToDTOMapperImpl
+import com.lagotech.fintrack.mocks.ExpenseCategoryMock
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.mockito.MockitoAnnotations
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
+import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.junit.jupiter.MockitoExtension
 
-@SpringBootTest
+@ExtendWith(MockitoExtension::class)
 class ExpenseCategoryMapperTest {
 
-    @Autowired
-    lateinit var expenseCategoryMock: ExpenseCategoryMock
+    private lateinit var entityToDTOMapper: EntityToDTOMapper
+
+    private lateinit var expenseCategoryMock: ExpenseCategoryMock
 
     @BeforeEach
     fun setUp() {
-        MockitoAnnotations.openMocks(this)
+        entityToDTOMapper = EntityToDTOMapperImpl()
+        expenseCategoryMock = ExpenseCategoryMock(entityToDTOMapper)
     }
 
     @Test

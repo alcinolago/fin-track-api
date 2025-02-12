@@ -1,24 +1,34 @@
 package com.lagotech.fintrack.mappers
 
+import com.lagotech.fintrack.application.mapper.EntityToDTOMapper
+import com.lagotech.fintrack.application.mapper.EntityToDTOMapperImpl
 import com.lagotech.fintrack.domain.model.TransactionType
+import com.lagotech.fintrack.mocks.BankAccountMock
+import com.lagotech.fintrack.mocks.ExpenseCategoryMock
+import com.lagotech.fintrack.mocks.TransactionMock
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.mockito.MockitoAnnotations
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
+import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.junit.jupiter.MockitoExtension
 import java.math.BigDecimal
 import java.time.format.DateTimeFormatter
 
-@SpringBootTest
+@ExtendWith(MockitoExtension::class)
 class TransactionMapperTest {
 
-    @Autowired
-    lateinit var transactionMock: TransactionMock
+    private lateinit var entityToDTOMapper: EntityToDTOMapper
+
+    private lateinit var bankMock: BankAccountMock
+    private lateinit var categoryMock: ExpenseCategoryMock
+    private lateinit var transactionMock: TransactionMock
 
     @BeforeEach
     fun setUp() {
-        MockitoAnnotations.openMocks(this)
+        entityToDTOMapper = EntityToDTOMapperImpl()
+        bankMock = BankAccountMock(entityToDTOMapper)
+        categoryMock = ExpenseCategoryMock(entityToDTOMapper)
+        transactionMock = TransactionMock(entityToDTOMapper, categoryMock, bankMock)
     }
 
     @Test

@@ -1,4 +1,4 @@
-package com.lagotech.fintrack.mappers
+package com.lagotech.fintrack.mocks
 
 import com.lagotech.fintrack.application.dto.TransactionDTO
 import com.lagotech.fintrack.application.mapper.EntityToDTOMapper

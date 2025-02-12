@@ -1,22 +1,26 @@
 package com.lagotech.fintrack.mappers
 
+import com.lagotech.fintrack.application.mapper.EntityToDTOMapper
+import com.lagotech.fintrack.application.mapper.EntityToDTOMapperImpl
+import com.lagotech.fintrack.mocks.BankAccountMock
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.mockito.MockitoAnnotations
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
+import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.junit.jupiter.MockitoExtension
 
-@SpringBootTest
+@ExtendWith(MockitoExtension::class)
 class BankAccountMapperTest {
 
-    @Autowired
-    lateinit var bankAccountMock: BankAccountMock
+    private lateinit var entityToDTOMapper: EntityToDTOMapper
+
+    private lateinit var bankAccountMock: BankAccountMock
 
     @BeforeEach
     fun setUp() {
-        MockitoAnnotations.openMocks(this)
+        entityToDTOMapper = EntityToDTOMapperImpl()
+        bankAccountMock = BankAccountMock(entityToDTOMapper)
     }
 
     @Test

@@ -9,7 +9,7 @@ data class ExpenseCategory(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long = 0,
+    var id: Long? = null,
 
     @Column(name = "name", nullable = false, length = 100)
     var name: String,
@@ -23,5 +23,5 @@ data class ExpenseCategory(
     @Column(name = "created_at", nullable = false)
     var createdAt: LocalDateTime = LocalDateTime.now()
 ) {
-    constructor() : this(0, "", "", "", LocalDateTime.now())
+    constructor() : this(null, "", "", "", LocalDateTime.now())
 }
