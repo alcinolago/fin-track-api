@@ -36,14 +36,14 @@ class TransactionMapperTest {
 
         val transactionDTO = transactionMock.mockEntityToDTO()
 
-        val formattedTransactionDate = transactionDTO.transactionDate.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
-        val formattedCreatedAtDate = transactionDTO.createdAt.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+        val formattedTransactionDate = transactionDTO.transactionDate?.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+        val formattedCreatedAtDate = transactionDTO.createdAt?.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
 
         assertNotNull(transactionDTO)
         assertEquals(1, transactionDTO.id)
         assertEquals(TransactionType.EXPENSE, transactionDTO.transactionType)
-        assertEquals("Food", transactionDTO.category.name)
-        assertEquals("Itau", transactionDTO.bank.bankName)
+        assertEquals("Food", transactionDTO.category?.name)
+        assertEquals("Itau", transactionDTO.bank?.bankName)
         assertEquals(BigDecimal(1000), transactionDTO.amount)
         assertEquals("2025-02-25T14:30:00", formattedTransactionDate)
         assertFalse(transactionDTO.notified)
@@ -75,15 +75,15 @@ class TransactionMapperTest {
         val transactionDTOList = transactionMock.mockEntityListToDTOList()
 
         val formattedTransactionDate =
-            transactionDTOList[0].transactionDate.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
-        val formattedCreatedAtDate = transactionDTOList[0].createdAt.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+            transactionDTOList[0].transactionDate?.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+        val formattedCreatedAtDate = transactionDTOList[0].createdAt?.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
 
         assertNotNull(transactionDTOList)
         assertEquals(2, transactionDTOList.size)
         assertEquals(1, transactionDTOList[0].id)
         assertEquals(TransactionType.EXPENSE, transactionDTOList[0].transactionType)
-        assertEquals("Food", transactionDTOList[0].category.name)
-        assertEquals("Itau", transactionDTOList[0].bank.bankName)
+        assertEquals("Food", transactionDTOList[0].category?.name)
+        assertEquals("Itau", transactionDTOList[0].bank?.bankName)
         assertEquals(BigDecimal(1000), transactionDTOList[0].amount)
         assertEquals("2025-02-25T14:30:00", formattedTransactionDate)
         assertFalse(transactionDTOList[0].notified)

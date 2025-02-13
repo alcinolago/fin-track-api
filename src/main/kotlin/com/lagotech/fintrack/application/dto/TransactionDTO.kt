@@ -13,35 +13,35 @@ data class TransactionDTO(
 
     var id: Long? = null,
 
-    @field:NotNull(message = "O tipo da transação não pode ser nulo")
-    var transactionType: TransactionType,
+    @field:NotNull(message = "Não pode ser nulo")
+    var transactionType: TransactionType? = null,
 
-    @field:NotNull(message = "A categoria não pode ser nula")
-    var category: ExpenseCategory,
+    @field:NotNull(message = "Não pode ser nulo")
+    var category: ExpenseCategory? = null,
 
-    @field:NotNull(message = "O banco não pode ser nulo")
-    var bank: BankAccount,
+    @field:NotNull(message = "Não pode ser nulo")
+    var bank: BankAccount? = null,
 
-    @field:NotNull(message = "O valor não pode ser nulo")
+    @field:NotNull(message = "Não pode ser nulo")
     @field:Positive(message = "O valor da transação deve ser maior que zero")
-    var amount: BigDecimal,
+    var amount: BigDecimal? = null,
 
-    @field:PastOrPresent(message = "A data da transação não pode estar no futuro")
-    var transactionDate: LocalDateTime = LocalDateTime.now(),
+    @field:PastOrPresent(message = "A data não pode estar no futuro")
+    var transactionDate: LocalDateTime? = null,
 
     var notified: Boolean = false,
 
-    @field:PastOrPresent(message = "A data de criação não pode estar no futuro")
-    var createdAt: LocalDateTime = LocalDateTime.now()
+    @field:PastOrPresent(message = "A data não pode estar no futuro")
+    var createdAt: LocalDateTime? = null
 ) {
     constructor() : this(
-        0,
-        TransactionType.EXPENSE,
-        ExpenseCategory(),
-        BankAccount(),
-        BigDecimal.ZERO,
-        LocalDateTime.now(),
-        false,
-        LocalDateTime.now()
+        id = null,
+        transactionType = null,
+        category = null,
+        bank = null,
+        amount = null,
+        transactionDate = null,
+        notified = false,
+        createdAt = null
     )
 }
