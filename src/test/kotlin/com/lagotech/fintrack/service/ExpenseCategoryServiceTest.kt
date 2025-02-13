@@ -1,10 +1,11 @@
-package com.lagotech.fintrack.domain.service
+package com.lagotech.fintrack.service
 
 import com.lagotech.fintrack.adapters.outbound.repository.ExpenseCategoryRepository
 import com.lagotech.fintrack.application.dto.ExpenseCategoryDTO
 import com.lagotech.fintrack.application.exception.ResourceNotFoundException
 import com.lagotech.fintrack.application.mapper.EntityToDTOMapper
 import com.lagotech.fintrack.domain.model.ExpenseCategory
+import com.lagotech.fintrack.domain.service.ExpenseCategoryService
 import com.lagotech.fintrack.mocks.ExpenseCategoryMock
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach

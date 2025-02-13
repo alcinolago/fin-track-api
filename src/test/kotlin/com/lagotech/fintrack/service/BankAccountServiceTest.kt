@@ -1,10 +1,11 @@
-package com.lagotech.fintrack.domain.service
+package com.lagotech.fintrack.service
 
 import com.lagotech.fintrack.adapters.outbound.repository.BankAccountRepository
 import com.lagotech.fintrack.application.dto.BankAccountDTO
 import com.lagotech.fintrack.application.exception.ResourceNotFoundException
 import com.lagotech.fintrack.application.mapper.EntityToDTOMapper
 import com.lagotech.fintrack.domain.model.BankAccount
+import com.lagotech.fintrack.domain.service.BankAccountService
 import com.lagotech.fintrack.mocks.BankAccountMock
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
