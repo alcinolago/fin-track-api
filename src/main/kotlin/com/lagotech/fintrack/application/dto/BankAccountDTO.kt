@@ -1,30 +1,33 @@
 package com.lagotech.fintrack.application.dto
 
-import jakarta.validation.constraints.*
+import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.PastOrPresent
+import jakarta.validation.constraints.Pattern
+import jakarta.validation.constraints.Size
 import java.time.LocalDateTime
 
 data class BankAccountDTO(
     var id: Long? = null,
 
-    @field:NotBlank(message = "Não pode estar em branco")
+    @field:NotBlank(message = "{generic.validation.notBlank}")
     var bankName: String,
 
-    @field:NotBlank(message = "Não pode estar em branco")
-    @field:Size(min = 6, max = 11, message = "O número da conta deve ter entre 6 e 11 caracteres")
-    @field:Pattern(regexp = "\\d+", message = "O número da conta deve conter apenas números")
+    @field:NotBlank(message = "{generic.validation.notBlank}")
+    @field:Size(min = 6, max = 11, message = "{bankAccount.accountNumber.size}")
+    @field:Pattern(regexp = "\\d+", message = "{generic.validation.mustBeNumber}")
     var accountNumber: String,
 
-    @field:NotBlank(message = "Não pode estar em branco")
-    @field:Size(min = 1, max = 1, message = "O dígito deve ter exatamente 1 caractere")
-    @field:Pattern(regexp = "\\d", message = "O dígito da conta deve ser um número")
+    @field:NotBlank(message = "{generic.validation.notBlank}")
+    @field:Size(min = 1, max = 1, message = "{bankAccount.accountDigit.size}")
+    @field:Pattern(regexp = "\\d", message = "{generic.validation.mustBeNumber}")
     var accountDigit: String,
 
-    @field:NotBlank(message = "Não pode estar em branco")
-    @field:Size(min = 4, max = 4, message = "O código da agência deve ter exatamente 4 caracteres")
-    @field:Pattern(regexp = "\\d{4}", message = "O código da agência deve conter exatamente 4 números")
+    @field:NotBlank(message = "{generic.validation.notBlank}")
+    @field:Size(min = 4, max = 4, message = "{bankAccount.agency.size}")
+    @field:Pattern(regexp = "\\d+", message = "{generic.validation.mustBeNumber}")
     var agency: String,
 
-    @field:PastOrPresent(message = "A data de criação não pode estar no futuro")
+    @field:PastOrPresent(message = "{generic.validation.createdAt.pastOrPresent}")
     var createdAt: LocalDateTime = LocalDateTime.now()
 ) {
     constructor() : this(null, "", "", "", "", LocalDateTime.now())

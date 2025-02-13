@@ -13,13 +13,14 @@ class BankAccountService(
     private val entityToDTOMapper: EntityToDTOMapper
 ) {
 
-    fun save(bankAccount: BankAccount): BankAccountDTO {
+    fun save(bankAccount: BankAccountDTO): BankAccountDTO {
 
         if (existsByBankName(bankAccount.bankName)) {
-            throw ResourceNotFoundException("Banco com o nome ${bankAccount.bankName} já existe")
+            throw IllegalArgumentException("Banco com o nome ${bankAccount.bankName} já existe")
         }
 
-        val savedBankAccount = repository.save(bankAccount)
+        val entity = entityToDTOMapper.parseObject(bankAccount, BankAccount::class.java)
+        val savedBankAccount = repository.save(entity)
 
         return entityToDTOMapper.parseObject(savedBankAccount, BankAccountDTO::class.java)
     }
@@ -27,7 +28,7 @@ class BankAccountService(
     fun findByName(name: String): List<BankAccountDTO> {
         val bankAccounts = repository.findByBankNameContaining(name)
 
-        if(bankAccounts.isEmpty()){
+        if (bankAccounts.isEmpty()) {
             throw ResourceNotFoundException("Recurso não encontrado")
         }
         return entityToDTOMapper.parseListObjects(bankAccounts, BankAccountDTO::class.java)

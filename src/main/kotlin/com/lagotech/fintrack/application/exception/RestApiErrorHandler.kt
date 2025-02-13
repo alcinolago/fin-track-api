@@ -1,7 +1,5 @@
 package com.lagotech.fintrack.application.exception
 
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import org.springframework.context.MessageSource
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -14,11 +12,7 @@ import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.context.request.WebRequest
 
 @ControllerAdvice
-class RestApiErrorHandler(
-    private val messageSource: MessageSource
-) {
-
-    private val logger: Logger = LoggerFactory.getLogger(RestApiErrorHandler::class.java)
+class RestApiErrorHandler(private val messageSource: MessageSource) {
 
     @ExceptionHandler(MethodArgumentNotValidException::class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -27,13 +21,11 @@ class RestApiErrorHandler(
         request: WebRequest
     ): ResponseEntity<ApiResponse> {
 
-        if (request.getDescription(false).contains("/swagger") || request.getDescription(false).contains("/v2/api-docs")) {
-            throw ex
-        }
-
-        logger.error("Validation error occurred", ex)
-
-        val errorMessage = messageSource.getMessage("validation.error", null, request.locale)
+        val errorMessage = messageSource.getMessage(
+            "errors.validation",
+            null,
+            request.locale
+        ) // Usando o MessageSource para traduzir a mensagem
 
         val apiError = ApiError(
             HttpStatus.BAD_REQUEST.value(),
@@ -49,9 +41,9 @@ class RestApiErrorHandler(
         }
 
         val response = ApiResponseUtil.error(
-            HttpStatus.BAD_REQUEST.value(),
-            errorMessage,
-            apiError
+            value = HttpStatus.BAD_REQUEST.value(),
+            message = errorMessage,
+            apiError = apiError
         )
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response)
@@ -64,13 +56,11 @@ class RestApiErrorHandler(
         request: WebRequest
     ): ResponseEntity<ApiResponse> {
 
-        if (request.getDescription(false).contains("/swagger") || request.getDescription(false).contains("/v2/api-docs")) {
-            throw ex
-        }
-
-        logger.error("Validation error occurred", ex)
-
-        val errorMessage = messageSource.getMessage("resource.not.found", null, request.locale)
+        val errorMessage = messageSource.getMessage(
+            "exception.resourceNotFound",
+            null,
+            request.locale
+        )
 
         val apiError = ApiError(
             HttpStatus.NOT_FOUND.value(),
@@ -88,14 +78,8 @@ class RestApiErrorHandler(
         request: WebRequest
     ): ResponseEntity<ApiResponse> {
 
-        if (request.getDescription(false).contains("/swagger") || request.getDescription(false).contains("/v2/api-docs")) {
-            throw ex
-        }
-
-        logger.error("Validation error occurred", ex)
-
         val errorMessage = messageSource.getMessage(
-            "error.request.body.missing",
+            "exception.requestBodyMissing",
             null,
             request.locale
         )
@@ -121,17 +105,9 @@ class RestApiErrorHandler(
         request: WebRequest
     ): ResponseEntity<ApiResponse> {
 
-        if (request.getDescription(false).contains("/swagger") || request.getDescription(false).contains("/v2/api-docs")) {
-            throw ex
-        }
-
-        logger.error("Validation error occurred", ex)
-
-        val supportedMethods = ex.supportedHttpMethods?.joinToString() ?: "none"
-
         val errorMessage = messageSource.getMessage(
-            "error.method.not.allowed",
-            arrayOf(ex.method, supportedMethods),
+            "exception.methodNotAllowed",
+            arrayOf(ex.method, ex.supportedHttpMethods?.joinToString() ?: ""),
             request.locale
         )
 
@@ -147,5 +123,28 @@ class RestApiErrorHandler(
         )
 
         return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(response)
+    }
+
+    @ExceptionHandler(IllegalArgumentException::class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    fun handleIllegalArgumentException(
+        ex: IllegalArgumentException,
+        request: WebRequest
+    ): ResponseEntity<ApiResponse> {
+
+        val errorMessage = messageSource.getMessage(
+            "exception.badRequest",
+            null,
+            request.locale
+        )
+
+        val apiError = ApiError(
+            HttpStatus.BAD_REQUEST.value(),
+            errorMessage
+        )
+
+        val response = ApiResponse(apiError)
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response)
     }
 }

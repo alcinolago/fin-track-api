@@ -1,6 +1,6 @@
 package com.lagotech.fintrack.application
 
-import com.lagotech.fintrack.domain.model.ExpenseCategory
+import com.lagotech.fintrack.application.dto.ExpenseCategoryDTO
 import com.lagotech.fintrack.domain.service.ExpenseCategoryService
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
@@ -17,7 +17,7 @@ class ExpenseCategoryApplicationTest {
 
     @Test
     fun `should save expense category successfully`() {
-        val expenseCategory = ExpenseCategory(
+        val expenseCategory = ExpenseCategoryDTO(
             name = "Luz",
             description = "Conta de Luz",
             color = "#FFFFFF",

@@ -1,18 +1,18 @@
 package com.lagotech.fintrack.application
 
-import com.lagotech.fintrack.domain.model.BankAccount
-import com.lagotech.fintrack.domain.model.ExpenseCategory
-import com.lagotech.fintrack.domain.model.Transaction
+import com.lagotech.fintrack.application.dto.BankAccountDTO
+import com.lagotech.fintrack.application.dto.ExpenseCategoryDTO
+import com.lagotech.fintrack.application.dto.TransactionDTO
 import com.lagotech.fintrack.domain.model.TransactionType
 import com.lagotech.fintrack.domain.service.BankAccountService
 import com.lagotech.fintrack.domain.service.ExpenseCategoryService
 import com.lagotech.fintrack.domain.service.TransactionService
-import org.springframework.transaction.annotation.Transactional
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
 import java.time.LocalDateTime
 
@@ -32,7 +32,7 @@ class TransactionApplicationTest {
     @Test
     fun `should save transaction successfully`() {
 
-        val bankAccount = BankAccount(
+        val bankAccount = BankAccountDTO(
             bankName = "Bradesco",
             accountNumber = "654321",
             accountDigit = "2",
@@ -42,7 +42,7 @@ class TransactionApplicationTest {
 
         bankAccountService.save(bankAccount)
 
-        val expenseCategory = ExpenseCategory(
+        val expenseCategory = ExpenseCategoryDTO(
             name = "Luz",
             description = "Conta de Luz",
             color = "#FFFFFF",
@@ -51,7 +51,11 @@ class TransactionApplicationTest {
 
         expenseCategoryService.save(expenseCategory)
 
-        val transaction = Transaction(
+        expenseCategory.id = 1
+        bankAccount.id = 1
+
+        val transaction = TransactionDTO(
+            id = null,
             transactionType = TransactionType.EXPENSE,
             category = expenseCategory,
             bank = bankAccount,

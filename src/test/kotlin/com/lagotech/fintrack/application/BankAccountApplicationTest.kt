@@ -1,6 +1,6 @@
 package com.lagotech.fintrack.application
 
-import com.lagotech.fintrack.domain.model.BankAccount
+import com.lagotech.fintrack.application.dto.BankAccountDTO
 import com.lagotech.fintrack.domain.service.BankAccountService
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
@@ -17,7 +17,7 @@ class BankAccountApplicationTest {
 
     @Test
     fun `should save bank account successfully`() {
-        val bankAccount = BankAccount(
+        val bankAccount = BankAccountDTO(
             bankName = "Bradesco",
             accountNumber = "654321",
             accountDigit = "2",

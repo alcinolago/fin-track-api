@@ -1,10 +1,10 @@
 package com.lagotech.fintrack.service
 
-import com.lagotech.fintrack.adapters.outbound.repository.ExpenseCategoryRepository
 import com.lagotech.fintrack.adapters.outbound.repository.TransactionRepository
 import com.lagotech.fintrack.application.dto.TransactionDTO
 import com.lagotech.fintrack.application.exception.ResourceNotFoundException
 import com.lagotech.fintrack.application.mapper.EntityToDTOMapper
+import com.lagotech.fintrack.application.mapper.EntityToDTOMapperImpl
 import com.lagotech.fintrack.domain.model.Transaction
 import com.lagotech.fintrack.domain.service.TransactionService
 import com.lagotech.fintrack.mocks.BankAccountMock
@@ -14,7 +14,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.Mockito.`when`
 import org.mockito.junit.jupiter.MockitoExtension
@@ -25,14 +24,13 @@ import kotlin.test.assertNotNull
 @ExtendWith(MockitoExtension::class)
 class TransactionServiceTest {
 
-    @InjectMocks
+    @Mock
     private lateinit var service: TransactionService
 
     @Mock
     private lateinit var repository: TransactionRepository
 
-    @Mock
-    private lateinit var entityToDTOMapper: EntityToDTOMapper
+    private val entityToDTOMapper: EntityToDTOMapper = EntityToDTOMapperImpl()
 
     lateinit var bankMock: BankAccountMock
     lateinit var categoryMock: ExpenseCategoryMock
@@ -42,31 +40,37 @@ class TransactionServiceTest {
     fun setUp() {
         bankMock = BankAccountMock(entityToDTOMapper)
         categoryMock = ExpenseCategoryMock(entityToDTOMapper)
-        transactionMock = TransactionMock(entityToDTOMapper,categoryMock,bankMock)
+        transactionMock = TransactionMock(entityToDTOMapper, categoryMock, bankMock)
+        service = TransactionService(repository, entityToDTOMapper)
     }
 
     @Test
     fun save() {
-        val transaction = transactionMock.getTransaction()
         val expectedDTO = transactionMock.getTransactionDTO()
 
-        `when`(entityToDTOMapper.parseObject(transaction, TransactionDTO::class.java)).thenReturn(expectedDTO)
-        `when`(repository.save(transaction)).thenReturn(transaction)
+        val entity = entityToDTOMapper.parseObject(expectedDTO, Transaction::class.java)
 
-        val result = service.save(transaction)
+        `when`(repository.save(entity)).thenReturn(entity)
+
+        val result = service.save(expectedDTO)
+
         assertNotNull(result)
+        assertNotNull(entity.id)
+        assertEquals(entity.category.name, result.category?.name)
+        assertEquals(entity.bank.bankName, result.bank?.bankName)
+
     }
 
     @Test
     fun findById() {
         val id = 1L
         val entity = transactionMock.getTransaction()
-        val expectedDTO = transactionMock.getTransactionDTO()
+        val expectedDTO = entityToDTOMapper.parseObject(entity, TransactionDTO::class.java)
 
         `when`(repository.findById(id)).thenReturn(Optional.of(entity))
-        `when`(entityToDTOMapper.parseObject(entity,TransactionDTO::class.java)).thenReturn(expectedDTO)
 
         val result = service.findById(id)
+
         assertNotNull(result)
         assertEquals(expectedDTO.bank, result.bank)
     }
@@ -90,7 +94,6 @@ class TransactionServiceTest {
         val expectedTransactionsList = transactionMock.getTransactionDTOList()
 
         `when`(repository.findAll()).thenReturn(transactions)
-        `when`(entityToDTOMapper.parseListObjects(transactions, TransactionDTO::class.java)).thenReturn(expectedTransactionsList)
 
         val result = service.findAll()
         assertNotNull(result)

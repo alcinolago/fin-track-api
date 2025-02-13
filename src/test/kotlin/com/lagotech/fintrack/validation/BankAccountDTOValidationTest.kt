@@ -37,13 +37,13 @@ class BankAccountDTOValidationTest {
 
         assertFalse(violations.isEmpty())
 
-        val blankViolations = violations.filter { it.message.contains("Não pode estar em branco") }
+        val blankViolations = violations.filter { it.messageTemplate.contains("{generic.validation.notBlank}") }
 
         assertEquals(4, blankViolations.size)
     }
 
     @Test
-    fun `should failed When Account Number has less than 6 or more than 11 characters`(){
+    fun `should failed When Account Number has less than 6 or more than 11 characters`() {
         val dto = BankAccountDTO(
             bankName = "Banco x",
             accountNumber = "12345",
@@ -56,12 +56,12 @@ class BankAccountDTOValidationTest {
 
         assertFalse(violations.isEmpty())
 
-        val sizeValidation = violations.filter { it.message.contains("O número da conta deve ter entre 6 e 11 caracteres") }
+        val sizeValidation = violations.filter { it.messageTemplate.contains("{bankAccount.accountNumber.size}") }
         assertEquals(1, sizeValidation.size)
     }
 
     @Test
-    fun `should failed When AccountNumber is not a number`(){
+    fun `should failed When AccountNumber is not a number`() {
         val dto = BankAccountDTO(
             bankName = "Banco x",
             accountNumber = "abcdef",
@@ -74,12 +74,12 @@ class BankAccountDTOValidationTest {
 
         assertFalse(violations.isEmpty())
 
-        val sizeValidation = violations.filter { it.message.contains("O número da conta deve conter apenas números") }
+        val sizeValidation = violations.filter { it.messageTemplate.contains("{generic.validation.mustBeNumber}") }
         assertEquals(1, sizeValidation.size)
     }
 
     @Test
-    fun `should failed When Account Digit has more than 1 character`(){
+    fun `should failed When Account Digit has more than 1 character`() {
         val dto = BankAccountDTO(
             bankName = "Banco x",
             accountNumber = "123456",
@@ -92,12 +92,12 @@ class BankAccountDTOValidationTest {
 
         assertFalse(violations.isEmpty())
 
-        val sizeValidation = violations.filter { it.message.contains("O dígito deve ter exatamente 1 caractere") }
+        val sizeValidation = violations.filter { it.messageTemplate.contains("{bankAccount.accountDigit.size}") }
         assertEquals(1, sizeValidation.size)
     }
 
     @Test
-    fun `should failed When Account Digit is not a number`(){
+    fun `should failed When Account Digit is not a number`() {
         val dto = BankAccountDTO(
             bankName = "Banco x",
             accountNumber = "123456",
@@ -110,12 +110,12 @@ class BankAccountDTOValidationTest {
 
         assertFalse(violations.isEmpty())
 
-        val sizeValidation = violations.filter { it.message.contains("O dígito da conta deve ser um número") }
+        val sizeValidation = violations.filter { it.messageTemplate.contains("{generic.validation.mustBeNumber}") }
         assertEquals(1, sizeValidation.size)
     }
 
     @Test
-    fun `should failed When Agency Digit has less than 4 or more than 4 characters`(){
+    fun `should failed When Agency Digit has less than 4 or more than 4 characters`() {
         val dto = BankAccountDTO(
             bankName = "Banco x",
             accountNumber = "123456",
@@ -128,12 +128,12 @@ class BankAccountDTOValidationTest {
 
         assertFalse(violations.isEmpty())
 
-        val sizeValidation = violations.filter { it.message.contains("O código da agência deve ter exatamente 4 caracteres") }
+        val sizeValidation = violations.filter { it.messageTemplate.contains("{bankAccount.agency.size}") }
         assertEquals(1, sizeValidation.size)
     }
 
     @Test
-    fun `should fail When Agency Digit is not a number`(){
+    fun `should fail When Agency Digit is not a number`() {
         val dto = BankAccountDTO(
             bankName = "Banco x",
             accountNumber = "123456",
@@ -146,7 +146,7 @@ class BankAccountDTOValidationTest {
 
         assertFalse(violations.isEmpty())
 
-        val sizeValidation = violations.filter { it.message.contains("O código da agência deve conter exatamente 4 números") }
+        val sizeValidation = violations.filter { it.messageTemplate.contains("{generic.validation.mustBeNumber}") }
         assertEquals(1, sizeValidation.size)
     }
 
@@ -165,11 +165,11 @@ class BankAccountDTOValidationTest {
 
         assertFalse(violationsFutureDate.isEmpty())
 
-        assertTrue(violationsFutureDate.any { it.message.contains("A data de criação não pode estar no futuro") })
+        assertTrue(violationsFutureDate.any { it.messageTemplate.contains("{generic.validation.createdAt.pastOrPresent}") })
     }
 
     @Test
-    fun `should pass when all conditions are satisfied`(){
+    fun `should pass when all conditions are satisfied`() {
 
         val dtoWithFutureDate = BankAccountDTO(
             bankName = "Banco Teste",

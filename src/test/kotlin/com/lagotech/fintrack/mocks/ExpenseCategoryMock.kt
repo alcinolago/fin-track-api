@@ -10,24 +10,44 @@ import java.time.LocalDateTime
 class ExpenseCategoryMock(private val entityToDTOMapper: EntityToDTOMapper) {
 
     fun mockExpenseCategoryDTO(): ExpenseCategoryDTO {
-        return ExpenseCategoryDTO(1, "Food", "Food expenses", "Blue", LocalDateTime.of(2025, 2, 25, 14, 30, 0, 0))
+        return ExpenseCategoryDTO(1, "Food", "Food expenses", "#0000ff", LocalDateTime.of(2025, 2, 25, 14, 30, 0, 0))
+    }
+
+    fun mockExpenseCategoryDTOWithoutId(): ExpenseCategoryDTO {
+        return ExpenseCategoryDTO(0, "Food", "Food expenses", "#0000ff", LocalDateTime.now())
     }
 
     fun mockExpenseCategoryDTOList(): List<ExpenseCategoryDTO> {
         return listOf(
-            ExpenseCategoryDTO(1, "Food", "Food expenses", "Blue", LocalDateTime.of(2025, 2, 25, 14, 30, 0, 0)),
-            ExpenseCategoryDTO(2, "Transport", "Transport expenses", "Red", LocalDateTime.of(2025, 2, 25, 14, 30, 0, 0))
+            ExpenseCategoryDTO(1, "Food", "Food expenses", "#0000ff", LocalDateTime.of(2025, 2, 25, 14, 30, 0, 0)),
+            ExpenseCategoryDTO(
+                2,
+                "Transport",
+                "Transport expenses",
+                "#ff0000",
+                LocalDateTime.of(2025, 2, 25, 14, 30, 0, 0)
+            )
         )
     }
 
     fun mockExpenseCategory(): ExpenseCategory {
-        return ExpenseCategory(1, "Food", "Food expenses", "Blue", LocalDateTime.of(2025, 2, 25, 14, 30, 0, 0))
+        return ExpenseCategory(1, "Food", "Food expenses", "#0000ff", LocalDateTime.of(2025, 2, 25, 14, 30, 0, 0))
+    }
+
+    fun mockExpenseCategoryWhitoutId(): ExpenseCategory {
+        return ExpenseCategory(0, "Food", "Food expenses", "#0000ff", LocalDateTime.now())
     }
 
     fun mockExpenseCategoryList(): List<ExpenseCategory> {
         return listOf(
-            ExpenseCategory(1, "Food", "Food expenses", "Blue", LocalDateTime.of(2025, 2, 25, 14, 30, 0, 0)),
-            ExpenseCategory(2, "Transport", "Transport expenses", "Red", LocalDateTime.of(2025, 2, 25, 14, 30, 0, 0))
+            ExpenseCategory(1, "Food", "Food expenses", "#0000ff", LocalDateTime.of(2025, 2, 25, 14, 30, 0, 0)),
+            ExpenseCategory(
+                2,
+                "Transport",
+                "Transport expenses",
+                "#ff0000",
+                LocalDateTime.of(2025, 2, 25, 14, 30, 0, 0)
+            )
         )
     }
 

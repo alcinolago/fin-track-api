@@ -1,8 +1,8 @@
 package com.lagotech.fintrack.validation
 
+import com.lagotech.fintrack.application.dto.BankAccountDTO
+import com.lagotech.fintrack.application.dto.ExpenseCategoryDTO
 import com.lagotech.fintrack.application.dto.TransactionDTO
-import com.lagotech.fintrack.domain.model.BankAccount
-import com.lagotech.fintrack.domain.model.ExpenseCategory
 import com.lagotech.fintrack.domain.model.TransactionType
 import jakarta.validation.Validation
 import jakarta.validation.Validator
@@ -28,7 +28,7 @@ class TransactionDTOValidationTest {
     }
 
     @Test
-    fun `should fail when required fields are null`(){
+    fun `should fail when required fields are null`() {
         val dto = TransactionDTO(
             transactionType = null,
             category = null,
@@ -43,17 +43,17 @@ class TransactionDTOValidationTest {
 
         assertFalse(violations.isEmpty())
 
-        val nullViolations = violations.filter { it.message.contains("Não pode ser nulo") }
+        val nullViolations = violations.filter { it.messageTemplate.contains("{generic.validation.notNull}") }
 
         assertEquals(4, nullViolations.size)
     }
 
     @Test
-    fun `should fail when amount is negative value`(){
+    fun `should fail when amount is negative value`() {
         val dto = TransactionDTO(
             transactionType = TransactionType.EXPENSE,
-            category = ExpenseCategory(),
-            bank = BankAccount(),
+            category = ExpenseCategoryDTO(),
+            bank = BankAccountDTO(),
             amount = BigDecimal(-150.25),
             transactionDate = LocalDateTime.now(),
             notified = false,
@@ -64,17 +64,17 @@ class TransactionDTOValidationTest {
 
         assertFalse(violations.isEmpty())
 
-        val amountNegativeViolation = violations.filter { it.message.contains("O valor da transação deve ser maior que zero") }
+        val amountNegativeViolation = violations.filter { it.messageTemplate.contains("{generic.validation.positive}") }
 
         assertEquals(1, amountNegativeViolation.size)
     }
 
     @Test
-    fun `should fail when transaction and created data is in the future`(){
+    fun `should fail when transaction and created data is in the future`() {
         val dto = TransactionDTO(
             transactionType = TransactionType.EXPENSE,
-            category = ExpenseCategory(),
-            bank = BankAccount(),
+            category = ExpenseCategoryDTO(),
+            bank = BankAccountDTO(),
             amount = BigDecimal(150.25),
             transactionDate = LocalDateTime.now().plusDays(1),
             notified = false,
@@ -85,17 +85,18 @@ class TransactionDTOValidationTest {
 
         assertFalse(violations.isEmpty())
 
-        val amountNegativeViolation = violations.filter { it.message.contains("A data não pode estar no futuro") }
+        val amountNegativeViolation =
+            violations.filter { it.messageTemplate.contains("{generic.validation.createdAt.pastOrPresent}") }
 
         assertEquals(2, amountNegativeViolation.size)
     }
 
     @Test
-    fun `should pass when all conditions are satisfied`(){
+    fun `should pass when all conditions are satisfied`() {
         val dto = TransactionDTO(
             transactionType = TransactionType.EXPENSE,
-            category = ExpenseCategory(),
-            bank = BankAccount(),
+            category = ExpenseCategoryDTO(),
+            bank = BankAccountDTO(),
             amount = BigDecimal(150.25),
             transactionDate = LocalDateTime.now(),
             notified = false,

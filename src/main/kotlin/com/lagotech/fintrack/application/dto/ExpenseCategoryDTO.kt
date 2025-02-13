@@ -7,23 +7,24 @@ import jakarta.validation.constraints.Size
 import java.time.LocalDateTime
 
 data class ExpenseCategoryDTO(
-    var id: Long? = null,
 
-    @field:NotBlank(message = "Não pode estar em branco")
-    @field:Size(min = 3, max = 50, message = "O nome deve ter entre 3 e 50 caracteres")
+    var id: Long = 0,
+
+    @field:NotBlank(message = "{generic.validation.notBlank}")
+    @field:Size(min = 3, max = 50, message = "{category.name.size}")
     var name: String,
 
     var description: String? = null,
 
-    @field:NotBlank(message = "Não pode estar em branco")
+    @field:NotBlank(message = "{generic.validation.notBlank}")
     @field:Pattern(
         regexp = "^#([A-Fa-f0-9]{6})$",
-        message = "A cor deve estar no formato hexadecimal (ex: #FFFFFF)"
+        message = "{category.color.pattern}"
     )
     var color: String,
 
-    @field:PastOrPresent(message = "A data de criação não pode estar no futuro")
+    @field:PastOrPresent(message = "{generic.validation.createdAt.pastOrPresent}")
     var createdAt: LocalDateTime = LocalDateTime.now()
 ) {
-    constructor() : this(null, "", "", "", LocalDateTime.now())
+    constructor() : this(0, "", "", "", LocalDateTime.now())
 }

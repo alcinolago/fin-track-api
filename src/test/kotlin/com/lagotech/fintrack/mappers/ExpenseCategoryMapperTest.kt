@@ -32,7 +32,7 @@ class ExpenseCategoryMapperTest {
         assertEquals(1, expenseCategoryDTO.id)
         assertEquals("Food", expenseCategoryDTO.name)
         assertEquals("Food expenses", expenseCategoryDTO.description)
-        assertEquals("Blue", expenseCategoryDTO.color)
+        assertEquals("#0000ff", expenseCategoryDTO.color)
     }
 
     @Test
@@ -43,7 +43,7 @@ class ExpenseCategoryMapperTest {
         assertEquals(1, expenseCategory.id)
         assertEquals("Food", expenseCategory.name)
         assertEquals("Food expenses", expenseCategory.description)
-        assertEquals("Blue", expenseCategory.color)
+        assertEquals("#0000ff", expenseCategory.color)
     }
 
     @Test
@@ -55,7 +55,7 @@ class ExpenseCategoryMapperTest {
         assertEquals(1, expenseCategoryDTOList[0].id)
         assertEquals("Food", expenseCategoryDTOList[0].name)
         assertEquals("Food expenses", expenseCategoryDTOList[0].description)
-        assertEquals("Blue", expenseCategoryDTOList[0].color)
+        assertEquals("#0000ff", expenseCategoryDTOList[0].color)
     }
 
     @Test
@@ -67,6 +67,6 @@ class ExpenseCategoryMapperTest {
         assertEquals(1, expenseCategoryList[0].id)
         assertEquals("Food", expenseCategoryList[0].name)
         assertEquals("Food expenses", expenseCategoryList[0].description)
-        assertEquals("Blue", expenseCategoryList[0].color)
+        assertEquals("#0000ff", expenseCategoryList[0].color)
     }
 }

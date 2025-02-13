@@ -4,6 +4,7 @@ import com.lagotech.fintrack.adapters.outbound.repository.BankAccountRepository
 import com.lagotech.fintrack.application.dto.BankAccountDTO
 import com.lagotech.fintrack.application.exception.ResourceNotFoundException
 import com.lagotech.fintrack.application.mapper.EntityToDTOMapper
+import com.lagotech.fintrack.application.mapper.EntityToDTOMapperImpl
 import com.lagotech.fintrack.domain.model.BankAccount
 import com.lagotech.fintrack.domain.service.BankAccountService
 import com.lagotech.fintrack.mocks.BankAccountMock
@@ -11,7 +12,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.Mockito.`when`
 import org.mockito.junit.jupiter.MockitoExtension
@@ -22,41 +22,45 @@ import kotlin.test.assertNotNull
 @ExtendWith(MockitoExtension::class)
 class BankAccountServiceTest {
 
-    @InjectMocks
+    @Mock
     private lateinit var service: BankAccountService
 
     @Mock
     private lateinit var repository: BankAccountRepository
 
-    @Mock
-    private lateinit var entityToDTOMapper: EntityToDTOMapper
+    private val entityToDTOMapper: EntityToDTOMapper = EntityToDTOMapperImpl()
 
     private lateinit var mockBankAccount: BankAccountMock
 
     @BeforeEach
     fun setUp() {
         mockBankAccount = BankAccountMock(entityToDTOMapper)
+        service = BankAccountService(repository, entityToDTOMapper)
     }
 
     @Test
     fun save() {
-        val entity = mockBankAccount.mockBankAccount()
         val expectedDTO = mockBankAccount.mockBankAccountDTO()
+        val entity = entityToDTOMapper.parseObject(expectedDTO, BankAccount::class.java)
 
-        `when`(entityToDTOMapper.parseObject(entity, BankAccountDTO::class.java)).thenReturn(expectedDTO)
         `when`(repository.save(entity)).thenReturn(entity)
 
-        val result = service.save(entity)
+        val result = service.save(expectedDTO)
+
         assertNotNull(result)
+        assertNotNull(entity.id)
+        assertEquals(entity.bankName, result.bankName)
+        assertEquals(entity.accountNumber, result.accountNumber)
+        assertEquals(entity.agency, result.agency)
     }
 
     @Test
     fun save_ShouldReturnException_WhenBankAlreadyExists() {
-        val bankAccount = mockBankAccount.mockBankAccount()
+        val bankAccount = mockBankAccount.mockBankAccountDTO()
 
         `when`(repository.existsByBankName(bankAccount.bankName)).thenReturn(true)
 
-        val exception = assertThrows<ResourceNotFoundException> {
+        val exception = assertThrows<IllegalArgumentException> {
             service.save(bankAccount)
         }
 
@@ -118,7 +122,6 @@ class BankAccountServiceTest {
         val expectedDTO = mockBankAccount.mockBankAccountDTO()
 
         `when`(repository.findById(id)).thenReturn(Optional.of(entity))
-        `when`(entityToDTOMapper.parseObject(entity, BankAccountDTO::class.java)).thenReturn(expectedDTO)
 
         val result = service.findById(id)
 

@@ -13,12 +13,14 @@ class ExpenseCategoryService(
     private val entityToDTOMapper: EntityToDTOMapper
 ) {
 
-    fun save(expenseCategory: ExpenseCategory): ExpenseCategoryDTO {
+    fun save(categoryDTO: ExpenseCategoryDTO): ExpenseCategoryDTO {
 
-        if (existsByName(expenseCategory.name)) {
-            throw ResourceNotFoundException("Categoria com o nome ${expenseCategory.name} já existe")
+        if (existsByName(categoryDTO.name)) {
+            throw IllegalArgumentException("Categoria com o nome ${categoryDTO.name} já existe")
         }
-        val savedExpenseCategory = repository.save(expenseCategory)
+
+        val entity = entityToDTOMapper.parseObject(categoryDTO, ExpenseCategory::class.java)
+        val savedExpenseCategory = repository.save(entity)
 
         return entityToDTOMapper.parseObject(savedExpenseCategory, ExpenseCategoryDTO::class.java)
     }

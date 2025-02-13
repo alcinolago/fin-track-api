@@ -22,7 +22,7 @@ class ExpenseCategoryDTOValidationTest {
     }
 
     @Test
-    fun `should fail when required fields are blank`(){
+    fun `should fail when required fields are blank`() {
         val dto = ExpenseCategoryDTO(
             name = "",
             description = "",
@@ -34,13 +34,13 @@ class ExpenseCategoryDTOValidationTest {
 
         assertFalse(violations.isEmpty())
 
-        val blankFieldsViolation = violations.filter { it.message.contains("Não pode estar em branco") }
+        val blankFieldsViolation = violations.filter { it.messageTemplate.contains("{generic.validation.notBlank}") }
 
         assertEquals(2, blankFieldsViolation.size)
     }
 
     @Test
-    fun `should fail when name has less than 3 or more than 50 characters`(){
+    fun `should fail when name has less than 3 or more than 50 characters`() {
         val dto = ExpenseCategoryDTO(
             name = "a",
             description = "",
@@ -52,13 +52,13 @@ class ExpenseCategoryDTOValidationTest {
 
         assertFalse(violations.isEmpty())
 
-        val blankFieldsViolation = violations.filter { it.message.contains("O nome deve ter entre 3 e 50 caracteres") }
+        val blankFieldsViolation = violations.filter { it.messageTemplate.contains("{category.name.size}") }
 
         assertEquals(1, blankFieldsViolation.size)
     }
 
     @Test
-    fun `should fail when color is not hexadecimal format #FFFFFF`(){
+    fun `should fail when color is not hexadecimal format #FFFFFF`() {
         val dto = ExpenseCategoryDTO(
             name = "a",
             description = "",
@@ -70,13 +70,14 @@ class ExpenseCategoryDTOValidationTest {
 
         assertFalse(violations.isEmpty())
 
-        val blankFieldsViolation = violations.filter { it.message.contains("A cor deve estar no formato hexadecimal (ex: #FFFFFF)") }
+        val blankFieldsViolation =
+            violations.filter { it.messageTemplate.contains("{category.color.pattern}") }
 
         assertEquals(1, blankFieldsViolation.size)
     }
 
     @Test
-    fun `should fail when created at is in the future`(){
+    fun `should fail when created at is in the future`() {
         val dto = ExpenseCategoryDTO(
             name = "Luz",
             description = "Conta de Luz",
@@ -88,13 +89,14 @@ class ExpenseCategoryDTOValidationTest {
 
         assertFalse(violations.isEmpty())
 
-        val blankFieldsViolation = violations.filter { it.message.contains("A data de criação não pode estar no futuro") }
+        val blankFieldsViolation =
+            violations.filter { it.messageTemplate.contains("{generic.validation.createdAt.pastOrPresent}") }
 
         assertEquals(1, blankFieldsViolation.size)
     }
 
     @Test
-    fun `should pass when all conditions are satisfied`(){
+    fun `should pass when all conditions are satisfied`() {
         val dto = ExpenseCategoryDTO(
             name = "Luz",
             description = "Conta de Luz",

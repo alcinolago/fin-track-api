@@ -13,8 +13,12 @@ class TransactionService(
     private val entityToDTOMapper: EntityToDTOMapper
 ) {
 
-    fun save(transaction: Transaction): TransactionDTO {
-        return entityToDTOMapper.parseObject(repository.save(transaction), TransactionDTO::class.java)
+    fun save(transactionDTO: TransactionDTO): TransactionDTO {
+
+        val entity = entityToDTOMapper.parseObject(transactionDTO, Transaction::class.java)
+        val savedTransaction = repository.save(entity)
+
+        return entityToDTOMapper.parseObject(savedTransaction, TransactionDTO::class.java)
     }
 
     fun findById(id: Long): TransactionDTO {
@@ -29,7 +33,7 @@ class TransactionService(
 
         val transactions = repository.findAll()
 
-        if(transactions.isEmpty()){
+        if (transactions.isEmpty()) {
             throw ResourceNotFoundException("Recurso não encontrado")
         }
 

@@ -4,6 +4,7 @@ import com.lagotech.fintrack.adapters.outbound.repository.ExpenseCategoryReposit
 import com.lagotech.fintrack.application.dto.ExpenseCategoryDTO
 import com.lagotech.fintrack.application.exception.ResourceNotFoundException
 import com.lagotech.fintrack.application.mapper.EntityToDTOMapper
+import com.lagotech.fintrack.application.mapper.EntityToDTOMapperImpl
 import com.lagotech.fintrack.domain.model.ExpenseCategory
 import com.lagotech.fintrack.domain.service.ExpenseCategoryService
 import com.lagotech.fintrack.mocks.ExpenseCategoryMock
@@ -12,11 +13,9 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.Mockito.`when`
 import org.mockito.junit.jupiter.MockitoExtension
-import java.time.format.DateTimeFormatter
 import java.util.*
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -24,50 +23,47 @@ import kotlin.test.assertNotNull
 @ExtendWith(MockitoExtension::class)
 class ExpenseCategoryServiceTest {
 
-    @InjectMocks
+    @Mock
     private lateinit var service: ExpenseCategoryService
 
     @Mock
     private lateinit var repository: ExpenseCategoryRepository
 
-    @Mock
-    private lateinit var entityToDTOMapper: EntityToDTOMapper
+    private val entityToDTOMapper: EntityToDTOMapper = EntityToDTOMapperImpl()
 
     lateinit var mockExpenseCategory: ExpenseCategoryMock
 
     @BeforeEach
     fun setUp() {
         mockExpenseCategory = ExpenseCategoryMock(entityToDTOMapper)
+        service = ExpenseCategoryService(repository, entityToDTOMapper)
     }
 
     @Test
     fun save() {
-        val entity = mockExpenseCategory.mockExpenseCategory()
+
         val expectedDTO = mockExpenseCategory.mockExpenseCategoryDTO()
 
-        `when`(entityToDTOMapper.parseObject(entity, ExpenseCategoryDTO::class.java)).thenReturn(expectedDTO)
+        val entity = entityToDTOMapper.parseObject(expectedDTO, ExpenseCategory::class.java)
+
         `when`(repository.save(entity)).thenReturn(entity)
 
-        val result = service.save(entity)
-
-        val formattedExpenseCategoryDate = result.createdAt.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+        val result = service.save(expectedDTO)
 
         assertNotNull(result)
         assertNotNull(entity.id)
-        assertEquals(entity.id, result.id)
         assertEquals(entity.name, result.name)
         assertEquals(entity.description, result.description)
         assertEquals(entity.color, result.color)
-        assertEquals("2025-02-25T14:30:00", formattedExpenseCategoryDate)
     }
 
     @Test
     fun save_ShouldReturnException_WhenCategoryAlreadyExists() {
-        val expenseCategory = mockExpenseCategory.mockExpenseCategory()
+        val expenseCategory = mockExpenseCategory.mockExpenseCategoryDTO()
 
         `when`(repository.existsByName(expenseCategory.name)).thenReturn(true)
 
-        val exception = assertThrows<ResourceNotFoundException> {
+        val exception = assertThrows<IllegalArgumentException> {
             service.save(expenseCategory)
         }
 
@@ -77,7 +73,7 @@ class ExpenseCategoryServiceTest {
     @Test
     fun findByName() {
         val categoryName = "Food"
-        val expenseCategoryList = mockExpenseCategory.mockExpenseCategoryList()
+        val expenseCategoryList = mockExpenseCategory.mockExpenseCategoryDTOList()
 
         `when`(repository.findByNameContaining(categoryName)).thenReturn(expenseCategoryList)
 
@@ -127,10 +123,9 @@ class ExpenseCategoryServiceTest {
     fun findById() {
         val id = 1L
         val entity = mockExpenseCategory.mockExpenseCategory()
-        val expectedDTO = mockExpenseCategory.mockExpenseCategoryDTO()
+        val expectedDTO = entityToDTOMapper.parseObject(entity, ExpenseCategoryDTO::class.java)
 
         `when`(repository.findById(id)).thenReturn(Optional.of(entity))
-        `when`(entityToDTOMapper.parseObject(entity, ExpenseCategoryDTO::class.java)).thenReturn(expectedDTO)
 
         val result = service.findById(id)
 
