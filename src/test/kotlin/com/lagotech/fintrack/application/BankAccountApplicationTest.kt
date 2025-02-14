@@ -30,4 +30,14 @@ class BankAccountApplicationTest {
         assertNotNull(savedAccount.id)
         assertEquals("Bradesco", savedAccount.bankName)
     }
+
+    //TODO SAVE EXCEPTION
+    //TODO FIND BY ID
+    //TODO FIND BY ID EXCEPTION
+    //TODO FIND ALL
+    //TODO FIND ALL EXCEPTION
+    //TODO UPDATE
+    //TODO UPDATE EXCEPTION
+    //TODO DELETE EXCEPTION
+
 }

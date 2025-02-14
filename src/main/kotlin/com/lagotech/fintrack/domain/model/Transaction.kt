@@ -16,13 +16,11 @@ data class Transaction(
     @Column(name = "transaction_type", nullable = false)
     var transactionType: TransactionType,
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id", nullable = false)
-    var category: ExpenseCategory,
+    @Column(name = "category_id", nullable = false)
+    var categoryId: Long = 0,
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "bank_id", nullable = false)
-    var bank: BankAccount,
+    @Column(name = "bank_id", nullable = false)
+    var bankId: Long = 0,
 
     @Column(name = "amount", nullable = false)
     var amount: BigDecimal,
@@ -39,8 +37,8 @@ data class Transaction(
     constructor() : this(
         0,
         TransactionType.EXPENSE,
-        ExpenseCategory(),
-        BankAccount(),
+        0,
+        0,
         BigDecimal.ZERO,
         LocalDateTime.now(),
         false,

@@ -16,10 +16,10 @@ data class TransactionDTO(
     var transactionType: TransactionType? = null,
 
     @field:NotNull(message = "{generic.validation.notNull}")
-    var category: ExpenseCategoryDTO? = null,
+    var categoryId: Long = 0,
 
     @field:NotNull(message = "{generic.validation.notNull}")
-    var bank: BankAccountDTO? = null,
+    var bankId: Long = 0,
 
     @field:NotNull(message = "{generic.validation.notNull}")
     @field:Positive(message = "{generic.validation.positive}")
@@ -36,8 +36,8 @@ data class TransactionDTO(
     constructor() : this(
         id = null,
         transactionType = TransactionType.EXPENSE,
-        category = ExpenseCategoryDTO(),
-        bank = BankAccountDTO(),
+        categoryId = 0,
+        bankId = 0,
         amount = BigDecimal.ZERO,
         transactionDate = LocalDateTime.now(),
         notified = false,

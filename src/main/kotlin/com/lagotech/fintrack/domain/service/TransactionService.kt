@@ -16,6 +16,7 @@ class TransactionService(
     fun save(transactionDTO: TransactionDTO): TransactionDTO {
 
         val entity = entityToDTOMapper.parseObject(transactionDTO, Transaction::class.java)
+
         val savedTransaction = repository.save(entity)
 
         return entityToDTOMapper.parseObject(savedTransaction, TransactionDTO::class.java)
@@ -40,7 +41,37 @@ class TransactionService(
         return entityToDTOMapper.parseListObjects(transactions, TransactionDTO::class.java)
     }
 
-    fun delete(transaction: Transaction) {
+    fun update(id: Long, transactionDTO: TransactionDTO): TransactionDTO {
+
+        val existingTransaction = repository.findById(id)
+            .orElseThrow { ResourceNotFoundException("Transaction com ID $id não encontrada") }
+
+        transactionDTO.transactionType?.let {
+            existingTransaction.transactionType = it
+        }
+        transactionDTO.categoryId?.let {
+            existingTransaction.categoryId = it
+        }
+        transactionDTO.bankId?.let {
+            existingTransaction.bankId = it
+        }
+        transactionDTO.amount?.let {
+            existingTransaction.amount = it
+        }
+        transactionDTO.transactionDate?.let {
+            existingTransaction.transactionDate = it
+        }
+        existingTransaction.notified = transactionDTO.notified
+
+        val savedTransaction = repository.save(existingTransaction)
+
+        return entityToDTOMapper.parseObject(savedTransaction, TransactionDTO::class.java)
+    }
+
+    fun delete(transactionId: Long) {
+        val transaction = repository.findById(transactionId)
+            .orElseThrow { ResourceNotFoundException("Account Bank with id $transactionId not found") }
+
         repository.delete(transaction)
     }
 }

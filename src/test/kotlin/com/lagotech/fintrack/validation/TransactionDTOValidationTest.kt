@@ -1,7 +1,5 @@
 package com.lagotech.fintrack.validation
 
-import com.lagotech.fintrack.application.dto.BankAccountDTO
-import com.lagotech.fintrack.application.dto.ExpenseCategoryDTO
 import com.lagotech.fintrack.application.dto.TransactionDTO
 import com.lagotech.fintrack.domain.model.TransactionType
 import jakarta.validation.Validation
@@ -31,8 +29,8 @@ class TransactionDTOValidationTest {
     fun `should fail when required fields are null`() {
         val dto = TransactionDTO(
             transactionType = null,
-            category = null,
-            bank = null,
+            categoryId = 0,
+            bankId = 0,
             amount = null,
             transactionDate = LocalDateTime.now(),
             notified = false,
@@ -45,15 +43,15 @@ class TransactionDTOValidationTest {
 
         val nullViolations = violations.filter { it.messageTemplate.contains("{generic.validation.notNull}") }
 
-        assertEquals(4, nullViolations.size)
+        assertEquals(2, nullViolations.size)
     }
 
     @Test
     fun `should fail when amount is negative value`() {
         val dto = TransactionDTO(
             transactionType = TransactionType.EXPENSE,
-            category = ExpenseCategoryDTO(),
-            bank = BankAccountDTO(),
+            categoryId = 0,
+            bankId = 0,
             amount = BigDecimal(-150.25),
             transactionDate = LocalDateTime.now(),
             notified = false,
@@ -73,8 +71,8 @@ class TransactionDTOValidationTest {
     fun `should fail when transaction and created data is in the future`() {
         val dto = TransactionDTO(
             transactionType = TransactionType.EXPENSE,
-            category = ExpenseCategoryDTO(),
-            bank = BankAccountDTO(),
+            categoryId = 0,
+            bankId = 0,
             amount = BigDecimal(150.25),
             transactionDate = LocalDateTime.now().plusDays(1),
             notified = false,
@@ -95,8 +93,8 @@ class TransactionDTOValidationTest {
     fun `should pass when all conditions are satisfied`() {
         val dto = TransactionDTO(
             transactionType = TransactionType.EXPENSE,
-            category = ExpenseCategoryDTO(),
-            bank = BankAccountDTO(),
+            categoryId = 0,
+            bankId = 0,
             amount = BigDecimal(150.25),
             transactionDate = LocalDateTime.now(),
             notified = false,

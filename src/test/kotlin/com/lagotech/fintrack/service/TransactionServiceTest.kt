@@ -7,8 +7,6 @@ import com.lagotech.fintrack.application.mapper.EntityToDTOMapper
 import com.lagotech.fintrack.application.mapper.EntityToDTOMapperImpl
 import com.lagotech.fintrack.domain.model.Transaction
 import com.lagotech.fintrack.domain.service.TransactionService
-import com.lagotech.fintrack.mocks.BankAccountMock
-import com.lagotech.fintrack.mocks.ExpenseCategoryMock
 import com.lagotech.fintrack.mocks.TransactionMock
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -32,15 +30,11 @@ class TransactionServiceTest {
 
     private val entityToDTOMapper: EntityToDTOMapper = EntityToDTOMapperImpl()
 
-    lateinit var bankMock: BankAccountMock
-    lateinit var categoryMock: ExpenseCategoryMock
-    lateinit var transactionMock: TransactionMock
+    private lateinit var transactionMock: TransactionMock
 
     @BeforeEach
     fun setUp() {
-        bankMock = BankAccountMock(entityToDTOMapper)
-        categoryMock = ExpenseCategoryMock(entityToDTOMapper)
-        transactionMock = TransactionMock(entityToDTOMapper, categoryMock, bankMock)
+        transactionMock = TransactionMock(entityToDTOMapper)
         service = TransactionService(repository, entityToDTOMapper)
     }
 
@@ -56,9 +50,6 @@ class TransactionServiceTest {
 
         assertNotNull(result)
         assertNotNull(entity.id)
-        assertEquals(entity.category.name, result.category?.name)
-        assertEquals(entity.bank.bankName, result.bank?.bankName)
-
     }
 
     @Test
@@ -72,7 +63,6 @@ class TransactionServiceTest {
         val result = service.findById(id)
 
         assertNotNull(result)
-        assertEquals(expectedDTO.bank, result.bank)
     }
 
     @Test
@@ -110,4 +100,8 @@ class TransactionServiceTest {
 
         assertEquals("Recurso não encontrado", exception.message)
     }
+
+    //TODO UPDATE SUCCESS
+    //TODO UPDATE EXCEPTION
+    //TODO DELETE EXCEPTION ID NOT EXITS
 }

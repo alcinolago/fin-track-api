@@ -23,12 +23,12 @@ class BankAccountController(private val service: BankAccountService) {
     @GetMapping
     fun findAll(): ResponseEntity<List<BankAccountDTO>> {
 
-        val categories = service.findAll()
+        val bank = service.findAll()
 
-        categories.forEach { categoriesDTO ->
-            categoriesDTO.add(linkTo(BankAccountController::class.java).slash(categoriesDTO.id).withSelfRel())
+        bank.forEach { bankDTO ->
+            bankDTO.add(linkTo(BankAccountController::class.java).slash(bankDTO.id).withSelfRel())
         }
-        return ResponseEntity.status(HttpStatus.OK).body(categories)
+        return ResponseEntity.status(HttpStatus.OK).body(bank)
     }
 
     @GetMapping("/{bankId}")

@@ -29,4 +29,13 @@ class ExpenseCategoryApplicationTest {
         assertNotNull(savedCategory.id)
         assertEquals("Luz", savedCategory.name)
     }
+
+    //TODO SAVE EXCEPTION
+    //TODO FIND BY ID
+    //TODO FIND BY ID EXCEPTION
+    //TODO FIND ALL
+    //TODO FIND ALL EXCEPTION
+    //TODO UPDATE
+    //TODO UPDATE EXCEPTION
+    //TODO DELETE EXCEPTION
 }

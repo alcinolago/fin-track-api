@@ -10,17 +10,15 @@ import java.time.LocalDateTime
 
 @Component
 class TransactionMock(
-    private val entityToDTOMapper: EntityToDTOMapper,
-    private val expenseCategoryMock: ExpenseCategoryMock,
-    private val bankAccountMock: BankAccountMock
+    private val entityToDTOMapper: EntityToDTOMapper
 ) {
 
     fun getTransaction(): Transaction {
         return Transaction(
             id = 1,
             transactionType = TransactionType.EXPENSE,
-            category = expenseCategoryMock.mockExpenseCategory(),
-            bank = bankAccountMock.mockBankAccount(),
+            categoryId = 1,
+            bankId = 1,
             amount = BigDecimal(1000),
             transactionDate = LocalDateTime.of(2025, 2, 25, 14, 30, 0, 0),
             notified = false,
@@ -32,8 +30,8 @@ class TransactionMock(
         return TransactionDTO(
             id = 1,
             transactionType = TransactionType.EXPENSE,
-            category = expenseCategoryMock.mockExpenseCategoryDTO(),
-            bank = bankAccountMock.mockBankAccountDTO(),
+            categoryId = 1,
+            bankId = 1,
             amount = BigDecimal(1000),
             transactionDate = LocalDateTime.of(2025, 2, 25, 14, 30, 0, 0),
             notified = false,
@@ -46,8 +44,8 @@ class TransactionMock(
             Transaction(
                 id = 1,
                 transactionType = TransactionType.EXPENSE,
-                category = expenseCategoryMock.mockExpenseCategory(),
-                bank = bankAccountMock.mockBankAccount(),
+                categoryId = 1,
+                bankId = 1,
                 amount = BigDecimal(1000),
                 transactionDate = LocalDateTime.of(2025, 2, 25, 14, 30, 0, 0),
                 notified = false,
@@ -56,8 +54,8 @@ class TransactionMock(
             Transaction(
                 id = 2,
                 transactionType = TransactionType.EXPENSE,
-                category = expenseCategoryMock.mockExpenseCategory(),
-                bank = bankAccountMock.mockBankAccount(),
+                categoryId = 2,
+                bankId = 1,
                 amount = BigDecimal(2000),
                 transactionDate = LocalDateTime.of(2025, 2, 25, 14, 30, 0, 0),
                 notified = false,
@@ -71,8 +69,8 @@ class TransactionMock(
             TransactionDTO(
                 id = 1,
                 transactionType = TransactionType.EXPENSE,
-                category = expenseCategoryMock.mockExpenseCategoryDTO(),
-                bank = bankAccountMock.mockBankAccountDTO(),
+                categoryId = 1,
+                bankId = 1,
                 amount = BigDecimal(1000),
                 transactionDate = LocalDateTime.of(2025, 2, 25, 14, 30, 0, 0),
                 notified = false,
@@ -81,8 +79,8 @@ class TransactionMock(
             TransactionDTO(
                 id = 2,
                 transactionType = TransactionType.EXPENSE,
-                category = expenseCategoryMock.mockExpenseCategoryDTO(),
-                bank = bankAccountMock.mockBankAccountDTO(),
+                categoryId = 2,
+                bankId = 1,
                 amount = BigDecimal(2000),
                 transactionDate = LocalDateTime.of(2025, 2, 25, 14, 30, 0, 0),
                 notified = false,
