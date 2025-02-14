@@ -57,7 +57,24 @@ class ExpenseCategoryService(
         return repository.existsByName(name)
     }
 
-    fun delete(expenseCategory: ExpenseCategory) {
-        repository.delete(expenseCategory)
+    fun update(id: Long, categoryDTO: ExpenseCategoryDTO): ExpenseCategoryDTO {
+        val existingCategory = repository.findById(id)
+            .orElseThrow { ResourceNotFoundException("Categoria com ID $id não encontrada") }
+
+        // Atualizando os campos
+        existingCategory.name = categoryDTO.name
+        existingCategory.description = categoryDTO.description
+        existingCategory.color = categoryDTO.color
+
+        val savedCategory = repository.save(existingCategory)
+
+        return entityToDTOMapper.parseObject(savedCategory, ExpenseCategoryDTO::class.java)
+    }
+
+    fun delete(categoryId: Long) {
+        val category = repository.findById(categoryId)
+            .orElseThrow { ResourceNotFoundException("Category with id $categoryId not found") }
+
+        repository.delete(category)
     }
 }

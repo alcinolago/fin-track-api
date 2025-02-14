@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.PastOrPresent
 import jakarta.validation.constraints.Pattern
 import jakarta.validation.constraints.Size
+import org.springframework.hateoas.RepresentationModel
 import java.time.LocalDateTime
 
 data class ExpenseCategoryDTO(
@@ -25,6 +26,6 @@ data class ExpenseCategoryDTO(
 
     @field:PastOrPresent(message = "{generic.validation.createdAt.pastOrPresent}")
     var createdAt: LocalDateTime = LocalDateTime.now()
-) {
+) : RepresentationModel<ExpenseCategoryDTO>() {
     constructor() : this(0, "", "", "", LocalDateTime.now())
 }

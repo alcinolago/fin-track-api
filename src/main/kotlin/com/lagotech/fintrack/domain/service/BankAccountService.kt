@@ -54,7 +54,26 @@ class BankAccountService(
         return repository.existsByBankName(name)
     }
 
-    fun delete(bankAccount: BankAccount) {
-        repository.delete(bankAccount)
+    fun update(id: Long, bankAccountDTO: BankAccountDTO): BankAccountDTO {
+        val existingAccount = repository.findById(id)
+            .orElseThrow { ResourceNotFoundException("Account bank com ID $id não encontrada") }
+
+        // Atualizando os campos
+        existingAccount.bankName = bankAccountDTO.bankName
+        existingAccount.accountNumber = bankAccountDTO.accountNumber
+        existingAccount.accountDigit = bankAccountDTO.accountDigit
+        existingAccount.accountDigit = bankAccountDTO.accountDigit
+        existingAccount.agency = bankAccountDTO.agency
+
+        val savedAccountBank = repository.save(existingAccount)
+
+        return entityToDTOMapper.parseObject(savedAccountBank, BankAccountDTO::class.java)
+    }
+
+    fun delete(bankId: Long) {
+        val bank = repository.findById(bankId)
+            .orElseThrow { ResourceNotFoundException("Account Bank with id $bankId not found") }
+
+        repository.delete(bank)
     }
 }

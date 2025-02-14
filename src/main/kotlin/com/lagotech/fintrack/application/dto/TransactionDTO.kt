@@ -4,6 +4,7 @@ import com.lagotech.fintrack.domain.model.TransactionType
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.PastOrPresent
 import jakarta.validation.constraints.Positive
+import org.springframework.hateoas.RepresentationModel
 import java.math.BigDecimal
 import java.time.LocalDateTime
 
@@ -31,7 +32,7 @@ data class TransactionDTO(
 
     @field:PastOrPresent(message = "{generic.validation.createdAt.pastOrPresent}")
     var createdAt: LocalDateTime? = null
-) {
+) : RepresentationModel<TransactionDTO>() {
     constructor() : this(
         id = null,
         transactionType = TransactionType.EXPENSE,

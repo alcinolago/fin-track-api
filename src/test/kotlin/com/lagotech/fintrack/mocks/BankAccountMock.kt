@@ -10,24 +10,24 @@ import java.time.LocalDateTime
 class BankAccountMock(private val entityToDTOMapper: EntityToDTOMapper) {
 
     fun mockBankAccountDTO(): BankAccountDTO {
-        return BankAccountDTO(1, "Itau", "1234", "1", "0001", LocalDateTime.now())
+        return BankAccountDTO(1, "Itau", "1234", "1", "0001", LocalDateTime.of(2025, 2, 25, 14, 30, 0, 0))
     }
 
     fun mockBankAccountDTOList(): List<BankAccountDTO> {
         return listOf(
-            BankAccountDTO(1, "Itau", "1234", "1", "0001", LocalDateTime.now()),
-            BankAccountDTO(2, "Bradesco", "5678", "2", "5678", LocalDateTime.now())
+            BankAccountDTO(1, "Itau", "1234", "1", "0001", LocalDateTime.of(2025, 2, 25, 14, 30, 0, 0)),
+            BankAccountDTO(2, "Bradesco", "5678", "2", "5678", LocalDateTime.of(2025, 2, 25, 14, 30, 0, 0))
         )
     }
 
     fun mockBankAccount(): BankAccount {
-        return BankAccount(1, "Itau", "1234", "1", "0001", LocalDateTime.now())
+        return BankAccount(1, "Itau", "1234", "1", "0001", LocalDateTime.of(2025, 2, 25, 14, 30, 0, 0))
     }
 
     fun mockBankAccountList(): List<BankAccount> {
         return listOf(
-            BankAccount(1, "Itau", "1234", "1", "0001", LocalDateTime.now()),
-            BankAccount(2, "Bradesco", "5678", "2", "5678", LocalDateTime.now())
+            BankAccount(1, "Itau", "1234", "1", "0001", LocalDateTime.of(2025, 2, 25, 14, 30, 0, 0)),
+            BankAccount(2, "Bradesco", "5678", "2", "5678", LocalDateTime.of(2025, 2, 25, 14, 30, 0, 0))
         )
     }
 
