@@ -93,8 +93,8 @@ class TransactionDTOValidationTest {
     fun `should pass when all conditions are satisfied`() {
         val dto = TransactionDTO(
             transactionType = TransactionType.EXPENSE,
-            categoryId = 0,
-            bankId = 0,
+            categoryId = 1,
+            bankId = 1,
             amount = BigDecimal(150.25),
             transactionDate = LocalDateTime.now(),
             notified = false,
@@ -105,4 +105,7 @@ class TransactionDTOValidationTest {
 
         assertTrue(violations.isEmpty())
     }
+
+    //TODO VALIDATE CATEGORY MIN
+    //TODO VALIDATE BANK MIN
 }

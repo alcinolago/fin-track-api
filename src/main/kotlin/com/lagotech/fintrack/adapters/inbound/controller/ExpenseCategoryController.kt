@@ -1,7 +1,10 @@
 package com.lagotech.fintrack.adapters.inbound.controller
 
 import com.lagotech.fintrack.application.dto.ExpenseCategoryDTO
+import com.lagotech.fintrack.application.exception.ResourceNotFoundException
 import com.lagotech.fintrack.domain.service.ExpenseCategoryService
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn
@@ -9,10 +12,15 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
+@Tag(name = "Categorias", description = "Gerencia as categorias")
 @RestController
 @RequestMapping("/category")
 class ExpenseCategoryController(private val service: ExpenseCategoryService) {
 
+    @Operation(
+        summary = "Cadastrar uma nova categoria",
+        description = "Salva uma nova categoria no sistema."
+    )
     @PostMapping
     fun createCategory(@Valid @RequestBody category: ExpenseCategoryDTO): ResponseEntity<ExpenseCategoryDTO> {
         val createdCategory =
@@ -20,6 +28,10 @@ class ExpenseCategoryController(private val service: ExpenseCategoryService) {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdCategory)
     }
 
+    @Operation(
+        summary = "Listar categorias",
+        description = "Listar todas as categorias."
+    )
     @GetMapping
     fun findAll(): ResponseEntity<List<ExpenseCategoryDTO>> {
 
@@ -31,16 +43,25 @@ class ExpenseCategoryController(private val service: ExpenseCategoryService) {
         return ResponseEntity.status(HttpStatus.OK).body(categories)
     }
 
+    @Operation(
+        summary = "Buscar categoria por ID",
+        description = "Retorna uma categoria específica pelo seu ID",
+    )
     @GetMapping("/{categoryId}")
     fun findById(@PathVariable("categoryId") categoryId: Long): ResponseEntity<ExpenseCategoryDTO> {
 
         val category = service.findById(categoryId)
+            .orElseThrow { ResourceNotFoundException("Category with id $categoryId not found") }
 
         val response = category.add(linkTo(ExpenseCategoryController::class.java).slash(category.id).withSelfRel())
 
         return ResponseEntity.status(HttpStatus.OK).body(response)
     }
 
+    @Operation(
+        summary = "Atualizar Categoria",
+        description = "Atualizar Categoria pelo id informado."
+    )
     @PutMapping("/{categoryId}")
     fun updateCategory(
         @PathVariable("categoryId") categoryId: Long,
@@ -58,6 +79,10 @@ class ExpenseCategoryController(private val service: ExpenseCategoryService) {
         return ResponseEntity.ok(updatedCategory)
     }
 
+    @Operation(
+        summary = "Remover Categoria",
+        description = "Remover Categoria pelo id informado."
+    )
     @DeleteMapping("/{categoryId}")
     fun deleteCategory(@PathVariable("categoryId") categoryId: Long): ResponseEntity<Unit> {
         if (categoryId <= 0) {

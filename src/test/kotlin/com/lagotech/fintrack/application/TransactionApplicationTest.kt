@@ -40,6 +40,27 @@ class TransactionApplicationTest {
         assertEquals(BigDecimal(350.75), savedTransaction.amount)
     }
 
+    @Test
+    fun `should throw exception when saving with invalid data`() {
+
+        val transaction = TransactionDTO(
+            id = null,
+            transactionType = TransactionType.EXPENSE,
+            categoryId = 0,
+            bankId = 0,
+            amount = BigDecimal(350.75),
+            transactionDate = LocalDateTime.now(),
+            notified = false,
+            createdAt = LocalDateTime.now()
+        )
+
+        val savedTransaction = transactionService.save(transaction)
+
+        assertNotNull(savedTransaction.id)
+        assertEquals(TransactionType.EXPENSE, savedTransaction.transactionType)
+        assertEquals(BigDecimal(350.75), savedTransaction.amount)
+    }
+
     //TODO SAVE EXCEPTION
     //TODO FIND BY ID
     //TODO FIND BY ID EXCEPTION

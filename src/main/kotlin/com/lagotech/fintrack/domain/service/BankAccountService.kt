@@ -2,10 +2,12 @@ package com.lagotech.fintrack.domain.service
 
 import com.lagotech.fintrack.adapters.outbound.repository.BankAccountRepository
 import com.lagotech.fintrack.application.dto.BankAccountDTO
+import com.lagotech.fintrack.application.dto.ExpenseCategoryDTO
 import com.lagotech.fintrack.application.exception.ResourceNotFoundException
 import com.lagotech.fintrack.application.mapper.EntityToDTOMapper
 import com.lagotech.fintrack.domain.model.BankAccount
 import org.springframework.stereotype.Service
+import java.util.*
 
 @Service
 class BankAccountService(
@@ -44,10 +46,9 @@ class BankAccountService(
         return entityToDTOMapper.parseListObjects(bankAccopunts, BankAccountDTO::class.java)
     }
 
-    fun findById(id: Long): BankAccountDTO {
+    fun findById(id: Long): Optional<BankAccountDTO> {
         return repository.findById(id)
-            .orElseThrow { ResourceNotFoundException("Recurso não encontrado") }
-            .let { bankAccount -> entityToDTOMapper.parseObject(bankAccount, BankAccountDTO::class.java) }
+            .map { entityToDTOMapper.parseObject(it, BankAccountDTO::class.java) }
     }
 
     fun existsByBankName(name: String): Boolean {

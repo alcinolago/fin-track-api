@@ -2,6 +2,7 @@ package com.lagotech.fintrack.service
 
 import com.lagotech.fintrack.adapters.outbound.repository.BankAccountRepository
 import com.lagotech.fintrack.application.dto.BankAccountDTO
+import com.lagotech.fintrack.application.dto.ExpenseCategoryDTO
 import com.lagotech.fintrack.application.exception.ResourceNotFoundException
 import com.lagotech.fintrack.application.mapper.EntityToDTOMapper
 import com.lagotech.fintrack.application.mapper.EntityToDTOMapperImpl
@@ -119,7 +120,7 @@ class BankAccountServiceTest {
     fun findById() {
         val id = 1L
         val entity = mockBankAccount.mockBankAccount()
-        val expectedDTO = mockBankAccount.mockBankAccountDTO()
+        val expectedDTO: Optional<BankAccountDTO> = Optional.of(entityToDTOMapper.parseObject(entity, BankAccountDTO::class.java))
 
         `when`(repository.findById(id)).thenReturn(Optional.of(entity))
 
@@ -127,19 +128,6 @@ class BankAccountServiceTest {
 
         assertNotNull(result)
         assertEquals(expectedDTO, result)
-    }
-
-    @Test
-    fun findById_ShouldReturnException_WhenNotFoundById() {
-        val id = 0L
-
-        `when`(repository.findById(id)).thenReturn(Optional.empty())
-
-        val exception = assertThrows<ResourceNotFoundException> {
-            service.findById(id)
-        }
-
-        assertEquals("Recurso não encontrado", exception.message)
     }
 
     @Test

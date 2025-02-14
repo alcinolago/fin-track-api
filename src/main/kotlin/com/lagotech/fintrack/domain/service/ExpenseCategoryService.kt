@@ -6,6 +6,7 @@ import com.lagotech.fintrack.application.exception.ResourceNotFoundException
 import com.lagotech.fintrack.application.mapper.EntityToDTOMapper
 import com.lagotech.fintrack.domain.model.ExpenseCategory
 import org.springframework.stereotype.Service
+import java.util.*
 
 @Service
 class ExpenseCategoryService(
@@ -46,11 +47,9 @@ class ExpenseCategoryService(
         return entityToDTOMapper.parseListObjects(expenseCategoryList, ExpenseCategoryDTO::class.java)
     }
 
-    fun findById(id: Long): ExpenseCategoryDTO {
-        val expenseCategory = repository.findById(id)
-            .orElseThrow { ResourceNotFoundException("Expense category with id $id not found") }
-
-        return entityToDTOMapper.parseObject(expenseCategory, ExpenseCategoryDTO::class.java)
+    fun findById(id: Long): Optional<ExpenseCategoryDTO> {
+        return repository.findById(id)
+            .map { entityToDTOMapper.parseObject(it, ExpenseCategoryDTO::class.java) }
     }
 
     fun existsByName(name: String): Boolean {

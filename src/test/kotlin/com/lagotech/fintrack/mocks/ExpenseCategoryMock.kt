@@ -10,11 +10,7 @@ import java.time.LocalDateTime
 class ExpenseCategoryMock(private val entityToDTOMapper: EntityToDTOMapper) {
 
     fun mockExpenseCategoryDTO(): ExpenseCategoryDTO {
-        return ExpenseCategoryDTO(1, "Food", "Food expenses", "#0000ff", LocalDateTime.of(2025, 2, 25, 14, 30, 0, 0))
-    }
-
-    fun mockExpenseCategoryDTOWithoutId(): ExpenseCategoryDTO {
-        return ExpenseCategoryDTO(0, "Food", "Food expenses", "#0000ff", LocalDateTime.now())
+        return ExpenseCategoryDTO(1, "Food", "Food expenses", "#0000ff", LocalDateTime.of(2025, 2, 25, 14, 30))
     }
 
     fun mockExpenseCategoryDTOList(): List<ExpenseCategoryDTO> {
@@ -32,10 +28,6 @@ class ExpenseCategoryMock(private val entityToDTOMapper: EntityToDTOMapper) {
 
     fun mockExpenseCategory(): ExpenseCategory {
         return ExpenseCategory(1, "Food", "Food expenses", "#0000ff", LocalDateTime.of(2025, 2, 25, 14, 30, 0, 0))
-    }
-
-    fun mockExpenseCategoryWhitoutId(): ExpenseCategory {
-        return ExpenseCategory(0, "Food", "Food expenses", "#0000ff", LocalDateTime.now())
     }
 
     fun mockExpenseCategoryList(): List<ExpenseCategory> {
@@ -66,5 +58,4 @@ class ExpenseCategoryMock(private val entityToDTOMapper: EntityToDTOMapper) {
     fun mockDTOListToEntityList(): List<ExpenseCategory> {
         return entityToDTOMapper.parseListObjects(mockExpenseCategoryDTOList(), ExpenseCategory::class.java)
     }
-
 }

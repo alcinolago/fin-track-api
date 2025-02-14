@@ -123,7 +123,7 @@ class ExpenseCategoryServiceTest {
     fun findById() {
         val id = 1L
         val entity = mockExpenseCategory.mockExpenseCategory()
-        val expectedDTO = entityToDTOMapper.parseObject(entity, ExpenseCategoryDTO::class.java)
+        val expectedDTO: Optional<ExpenseCategoryDTO> = Optional.of(entityToDTOMapper.parseObject(entity, ExpenseCategoryDTO::class.java))
 
         `when`(repository.findById(id)).thenReturn(Optional.of(entity))
 
@@ -131,19 +131,6 @@ class ExpenseCategoryServiceTest {
 
         assertNotNull(result)
         assertEquals(expectedDTO, result)
-    }
-
-    @Test
-    fun findById_ShouldReturnException_WhenNotFoundById() {
-        val id = 0L
-
-        `when`(repository.findById(id)).thenReturn(Optional.empty())
-
-        val exception = assertThrows<ResourceNotFoundException> {
-            service.findById(id)
-        }
-
-        assertEquals("Expense category with id $id not found", exception.message)
     }
 
     @Test
