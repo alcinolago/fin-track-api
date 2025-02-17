@@ -11,6 +11,12 @@ import com.lagotech.fintrack.application.mapper.EntityToDTOMapper
 import com.lagotech.fintrack.domain.model.Transaction
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.Pageable
+import org.springframework.data.web.PagedResourcesAssembler
+import org.springframework.hateoas.EntityModel
+import org.springframework.hateoas.PagedModel
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn
 import org.springframework.stereotype.Service
@@ -20,6 +26,7 @@ class TransactionService(
     private val repository: TransactionRepository,
     private val entityToDTOMapper: EntityToDTOMapper,
     private val messageSource: MessageSource,
+    private val assembler: PagedResourcesAssembler<TransactionDTO>
 ) {
 
     fun save(transactionDTO: TransactionDTO): TransactionDTO {
@@ -47,10 +54,11 @@ class TransactionService(
         return transactionToDTO(transaction)
     }
 
-    fun findAll(): List<TransactionDTO> {
-        val transactions = repository.findAllWithDetails()
+    fun findAll(pageable: Pageable): PagedModel<EntityModel<TransactionDTO>> {
 
-        if (transactions.isEmpty()) {
+        val transactionsPage = repository.findAllWithDetails(pageable)
+
+        if (transactionsPage.isEmpty) {
             throw ResourceNotFoundException(
                 messageSource.getMessage(
                     "{generic.validation.resource.notFound}",
@@ -60,9 +68,9 @@ class TransactionService(
             )
         }
 
-        return transactions.map { transaction ->
-            transactionToDTO(transaction)
-        }
+        val transactions = transactionsPage.map { transaction -> transactionToPagedDTO(transaction) }
+
+        return assembler.toModel(transactions)
     }
 
 //    fun update(id: Long, transactionDTO: TransactionDTO): TransactionDTO {
@@ -108,6 +116,33 @@ class TransactionService(
     }
 
     fun transactionToDTO(transaction: Transaction): TransactionDTO {
+        return TransactionDTO(
+            id = transaction.id,
+            transactionType = transaction.transactionType,
+            category = ExpenseCategoryDTO(
+                id = transaction.category.id,
+                name = transaction.category.name,
+                color = transaction.category.color
+            ).apply {
+                add(linkTo(methodOn(ExpenseCategoryController::class.java).findById(id)).withSelfRel()) // Link da categoria
+            },
+            bankAccount = BankAccountDTO(
+                id = transaction.bankAccount.id,
+                bankName = transaction.bankAccount.bankName,
+                accountNumber = transaction.bankAccount.accountNumber,
+                accountDigit = transaction.bankAccount.accountDigit,
+                agency = transaction.bankAccount.agency
+            ).apply {
+                add(linkTo(methodOn(BankAccountController::class.java).findById(id)).withSelfRel()) // Link da conta bancária
+            },
+            amount = transaction.amount,
+            transactionDate = transaction.transactionDate,
+            notified = transaction.notified,
+            createdAt = transaction.createdAt
+        )
+    }
+
+    fun transactionToPagedDTO(transaction: Transaction): TransactionDTO {
         return TransactionDTO(
             id = transaction.id,
             transactionType = transaction.transactionType,

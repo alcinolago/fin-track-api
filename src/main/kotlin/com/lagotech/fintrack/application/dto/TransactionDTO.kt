@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.PastOrPresent
 import jakarta.validation.constraints.Positive
 import org.springframework.hateoas.RepresentationModel
+import org.springframework.hateoas.server.core.Relation
 import java.math.BigDecimal
 import java.time.LocalDateTime
 
@@ -23,6 +24,7 @@ import java.time.LocalDateTime
         "createdAt": "2025-02-13T14:44:00"
     }"""
 )
+@Relation(collectionRelation = "transactions")
 data class TransactionDTO(
 
     @Schema(description = "Identificador único da transação", example = "1")

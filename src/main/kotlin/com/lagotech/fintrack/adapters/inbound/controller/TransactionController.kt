@@ -1,6 +1,6 @@
 package com.lagotech.fintrack.adapters.inbound.controller
 
- import com.lagotech.fintrack.application.dto.TransactionDTO
+import com.lagotech.fintrack.application.dto.TransactionDTO
 import com.lagotech.fintrack.application.exception.ResourceNotFoundException
 import com.lagotech.fintrack.domain.service.BankAccountService
 import com.lagotech.fintrack.domain.service.ExpenseCategoryService
@@ -9,8 +9,14 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
+import org.springframework.data.web.PagedResourcesAssembler
+import org.springframework.hateoas.EntityModel
+import org.springframework.hateoas.PagedModel
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo
-import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -21,7 +27,7 @@ import org.springframework.web.bind.annotation.*
 class TransactionController(
     private val service: TransactionService,
     private val categoryService: ExpenseCategoryService,
-    private val accountService: BankAccountService,
+    private val accountService: BankAccountService
 ) {
 
     @Operation(
@@ -31,10 +37,10 @@ class TransactionController(
     @PostMapping
     fun createTransaction(@Valid @RequestBody transactionDTO: TransactionDTO): ResponseEntity<TransactionDTO> {
 
-        val categoryId = categoryService.findById(transactionDTO.category.id)
+        categoryService.findById(transactionDTO.category.id)
             .orElseThrow { ResourceNotFoundException("A Category with id ${transactionDTO.category.id} not found") }
 
-        val bankId = accountService.findById(transactionDTO.bankAccount.id)
+        accountService.findById(transactionDTO.bankAccount.id)
             .orElseThrow { ResourceNotFoundException("A Account Bank with id ${transactionDTO.bankAccount.id} not found") }
 
         val createdTransaction = service.save(transactionDTO)
@@ -51,12 +57,19 @@ class TransactionController(
         description = "Listar todas as transações."
     )
     @GetMapping
-    fun findAll(): ResponseEntity<List<TransactionDTO>> {
+    fun findAll(
+        @RequestParam(value = "page", defaultValue = "0") page: Int,
+        @RequestParam(value = "limit", defaultValue = "2") limit: Int,
+        @RequestParam(value = "sort", defaultValue = "asc") sort: String,
+    ): ResponseEntity<PagedModel<EntityModel<TransactionDTO>>> {
 
-        val transaction = service.findAll()
+        val sortDirection: Sort.Direction =
+            if("desc".equals(sort, ignoreCase = true)) Sort.Direction.DESC else Sort.Direction.ASC
+        val pageable: Pageable = PageRequest.of(page, limit, Sort.by(sortDirection, "transactionType"));
+        val transaction = service.findAll(pageable)
 
         transaction.forEach { transactionDTO ->
-            transactionDTO.add(linkTo(TransactionController::class.java).slash(transactionDTO.id).withSelfRel())
+            transactionDTO.add(linkTo(TransactionController::class.java).slash(transactionDTO.content?.id).withSelfRel())
         }
         return ResponseEntity.status(HttpStatus.OK).body(transaction)
     }

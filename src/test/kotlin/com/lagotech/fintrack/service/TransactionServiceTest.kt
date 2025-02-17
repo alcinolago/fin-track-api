@@ -91,7 +91,7 @@ class TransactionServiceTest {
         val transactions = transactionMock.getTransactionList()
         val expectedTransactionsList = transactionMock.getTransactionDTOList()
 
-        `when`(repository.findAllWithDetails()).thenReturn(transactions)
+        `when`(repository.findAllWithDetails(pageable)).thenReturn(transactions)
 
         val result = service.findAll()
         assertNotNull(result)
@@ -100,7 +100,7 @@ class TransactionServiceTest {
     @Test
     fun `should return an exception when not found any transaction`() {
 
-        `when`(repository.findAllWithDetails()).thenReturn(emptyList())
+        `when`(repository.findAllWithDetails(pageable)).thenReturn(emptyList())
         `when`(messageSource.getMessage(anyString(), any(), any()))
             .thenReturn("Recurso não encontrado")
 

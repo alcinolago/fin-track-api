@@ -6,6 +6,11 @@ import com.lagotech.fintrack.domain.service.ExpenseCategoryService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
+import org.springframework.hateoas.EntityModel
+import org.springframework.hateoas.PagedModel
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn
 import org.springframework.http.HttpStatus
@@ -33,13 +38,17 @@ class ExpenseCategoryController(private val service: ExpenseCategoryService) {
         description = "Listar todas as categorias."
     )
     @GetMapping
-    fun findAll(): ResponseEntity<List<ExpenseCategoryDTO>> {
+    fun findAll(
+        @RequestParam(value = "page", defaultValue = "0") page: Int,
+        @RequestParam(value = "limit", defaultValue = "2") limit: Int,
+        @RequestParam(value = "sort", defaultValue = "asc") sort: String,
+    ): ResponseEntity<PagedModel<EntityModel<ExpenseCategoryDTO>>> {
 
-        val categories = service.findAll()
+        val sortDirection: Sort.Direction =
+            if("desc".equals(sort, ignoreCase = true)) Sort.Direction.DESC else Sort.Direction.ASC
+        val pageable: Pageable = PageRequest.of(page, limit, Sort.by(sortDirection, "name"));
+        val categories = service.findAll(pageable)
 
-        categories.forEach { categoriesDTO ->
-            categoriesDTO.add(linkTo(ExpenseCategoryController::class.java).slash(categoriesDTO.id).withSelfRel())
-        }
         return ResponseEntity.status(HttpStatus.OK).body(categories)
     }
 

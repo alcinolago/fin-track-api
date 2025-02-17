@@ -1,5 +1,6 @@
 package com.lagotech.fintrack.domain.service
 
+import com.lagotech.fintrack.adapters.inbound.controller.ExpenseCategoryController
 import com.lagotech.fintrack.adapters.outbound.repository.ExpenseCategoryRepository
 import com.lagotech.fintrack.application.dto.ExpenseCategoryDTO
 import com.lagotech.fintrack.application.exception.ResourceNotFoundException
@@ -7,6 +8,12 @@ import com.lagotech.fintrack.application.mapper.EntityToDTOMapper
 import com.lagotech.fintrack.domain.model.ExpenseCategory
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
+import org.springframework.data.web.PagedResourcesAssembler
+import org.springframework.hateoas.EntityModel
+import org.springframework.hateoas.PagedModel
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo
 import org.springframework.stereotype.Service
 import java.util.*
 
@@ -14,7 +21,8 @@ import java.util.*
 class ExpenseCategoryService(
     private val repository: ExpenseCategoryRepository,
     private val entityToDTOMapper: EntityToDTOMapper,
-    private val messageSource: MessageSource
+    private val messageSource: MessageSource,
+    private val assembler: PagedResourcesAssembler<ExpenseCategoryDTO>
 ) {
 
     fun save(categoryDTO: ExpenseCategoryDTO): ExpenseCategoryDTO {
@@ -52,11 +60,11 @@ class ExpenseCategoryService(
         return entityToDTOMapper.parseListObjects(expenseCategory, ExpenseCategoryDTO::class.java)
     }
 
-    fun findAll(): List<ExpenseCategoryDTO> {
+    fun findAll(pageable: Pageable): PagedModel<EntityModel<ExpenseCategoryDTO>> {
 
-        val expenseCategoryList = repository.findAll()
+        val expenseCategoryList = repository.findAll(pageable)
 
-        if (expenseCategoryList.isEmpty()) {
+        if (expenseCategoryList.isEmpty) {
             throw ResourceNotFoundException(
                 messageSource.getMessage(
                     "{generic.validation.resource.notFound}",
@@ -65,7 +73,13 @@ class ExpenseCategoryService(
                 )
             )
         }
-        return entityToDTOMapper.parseListObjects(expenseCategoryList, ExpenseCategoryDTO::class.java)
+
+        val categoriesPage: Page<ExpenseCategoryDTO> = expenseCategoryList.map { cat ->
+            entityToDTOMapper.parseObject(cat, ExpenseCategoryDTO::class.java)
+        }
+        categoriesPage.map { cat -> cat.add(linkTo(ExpenseCategoryController::class.java).slash(cat.id).withSelfRel()) }
+
+        return assembler.toModel(categoriesPage)
     }
 
     fun findById(id: Long): Optional<ExpenseCategoryDTO> {

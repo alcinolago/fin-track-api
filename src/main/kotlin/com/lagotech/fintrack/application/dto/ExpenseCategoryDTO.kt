@@ -6,6 +6,7 @@ import jakarta.validation.constraints.PastOrPresent
 import jakarta.validation.constraints.Pattern
 import jakarta.validation.constraints.Size
 import org.springframework.hateoas.RepresentationModel
+import org.springframework.hateoas.server.core.Relation
 import java.time.LocalDateTime
 
 @Schema(
@@ -17,6 +18,7 @@ import java.time.LocalDateTime
         "color": "#0000FF"
     }"""
 )
+@Relation(collectionRelation = "categories")
 data class ExpenseCategoryDTO(
 
     @Schema(description = "Identificador único da conta bancária", example = "1")
