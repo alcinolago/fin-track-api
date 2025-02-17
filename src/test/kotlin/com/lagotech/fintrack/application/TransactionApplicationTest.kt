@@ -1,5 +1,7 @@
 package com.lagotech.fintrack.application
 
+import com.lagotech.fintrack.application.dto.BankAccountDTO
+import com.lagotech.fintrack.application.dto.ExpenseCategoryDTO
 import com.lagotech.fintrack.application.dto.TransactionDTO
 import com.lagotech.fintrack.domain.model.TransactionType
 import com.lagotech.fintrack.domain.service.TransactionService
@@ -22,11 +24,25 @@ class TransactionApplicationTest {
     @Test
     fun `should save transaction successfully`() {
 
+        val category = ExpenseCategoryDTO(
+            id = 1,
+            name = "Cultura",
+            description = "Teatros, Óperas e Museus",
+            color = "#FFFFFF"
+        )
+
+        val bankAccount = BankAccountDTO(
+            id = 1,
+            bankName = "Nome do Banco",
+            accountNumber = "123456",
+            accountDigit = "1",
+            agency = "1234")
+
         val transaction = TransactionDTO(
-            id = null,
+            id = 0,
             transactionType = TransactionType.EXPENSE,
-            categoryId = 1,
-            bankId = 1,
+            category = category,
+            bankAccount = bankAccount,
             amount = BigDecimal(350.75),
             transactionDate = LocalDateTime.now(),
             notified = false,
@@ -43,11 +59,25 @@ class TransactionApplicationTest {
     @Test
     fun `should throw exception when saving with invalid data`() {
 
+        val category = ExpenseCategoryDTO(
+            id = 1,
+            name = "Cultura",
+            description = "Teatros, Óperas e Museus",
+            color = "#FFFFFF"
+        )
+
+        val bankAccount = BankAccountDTO(
+            id = 1,
+            bankName = "Nome do Banco",
+            accountNumber = "123456",
+            accountDigit = "1",
+            agency = "1234")
+
         val transaction = TransactionDTO(
-            id = null,
+            id = 0,
             transactionType = TransactionType.EXPENSE,
-            categoryId = 0,
-            bankId = 0,
+            category = category,
+            bankAccount = bankAccount,
             amount = BigDecimal(350.75),
             transactionDate = LocalDateTime.now(),
             notified = false,

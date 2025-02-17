@@ -1,15 +1,12 @@
 package com.lagotech.fintrack.adapters.inbound.controller
 
-import com.lagotech.fintrack.application.dto.TransactionDTO
+ import com.lagotech.fintrack.application.dto.TransactionDTO
 import com.lagotech.fintrack.application.exception.ResourceNotFoundException
 import com.lagotech.fintrack.domain.service.BankAccountService
 import com.lagotech.fintrack.domain.service.ExpenseCategoryService
 import com.lagotech.fintrack.domain.service.TransactionService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
-import io.swagger.v3.oas.annotations.media.Content
-import io.swagger.v3.oas.annotations.media.Schema
-import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo
@@ -34,11 +31,11 @@ class TransactionController(
     @PostMapping
     fun createTransaction(@Valid @RequestBody transactionDTO: TransactionDTO): ResponseEntity<TransactionDTO> {
 
-        val categoryId = categoryService.findById(transactionDTO.categoryId)
-            .orElseThrow { ResourceNotFoundException("A Category with id ${transactionDTO.categoryId} not found") }
+        val categoryId = categoryService.findById(transactionDTO.category.id)
+            .orElseThrow { ResourceNotFoundException("A Category with id ${transactionDTO.category.id} not found") }
 
-        val bankId = accountService.findById(transactionDTO.bankId)
-            .orElseThrow { ResourceNotFoundException("A Account Bank with id ${transactionDTO.bankId} not found") }
+        val bankId = accountService.findById(transactionDTO.bankAccount.id)
+            .orElseThrow { ResourceNotFoundException("A Account Bank with id ${transactionDTO.bankAccount.id} not found") }
 
         val createdTransaction = service.save(transactionDTO)
 
@@ -81,26 +78,26 @@ class TransactionController(
         return ResponseEntity.status(HttpStatus.OK).body(response)
     }
 
-    @Operation(
-        summary = "Atualizar transação",
-        description = "Atualizar transação pelo id informado."
-    )
-    @PutMapping("/{transactionId}")
-    fun updatedTransaction(
-        @PathVariable("transactionId") transactionId: Long,
-        @Valid @RequestBody transactionDTO: TransactionDTO
-    ): ResponseEntity<TransactionDTO> {
-
-        if (transactionId <= 0) {
-            throw IllegalArgumentException("ID must be provided and greater than zero")
-        }
-
-        val updatedTransaction = service.update(transactionId, transactionDTO)
-
-        updatedTransaction.add(linkTo(methodOn(TransactionController::class.java).findById(transactionId)).withSelfRel())
-
-        return ResponseEntity.ok(updatedTransaction)
-    }
+//    @Operation(
+//        summary = "Atualizar transação",
+//        description = "Atualizar transação pelo id informado."
+//    )
+//    @PutMapping("/{transactionId}")
+//    fun updatedTransaction(
+//        @PathVariable("transactionId") transactionId: Long,
+//        @Valid @RequestBody transactionDTO: TransactionDTO
+//    ): ResponseEntity<TransactionDTO> {
+//
+//        if (transactionId <= 0) {
+//            throw IllegalArgumentException("ID must be provided and greater than zero")
+//        }
+//
+//        val updatedTransaction = service.update(transactionId, transactionDTO)
+//
+//        updatedTransaction.add(linkTo(methodOn(TransactionController::class.java).findById(transactionId)).withSelfRel())
+//
+//        return ResponseEntity.ok(updatedTransaction)
+//    }
 
     @Operation(
         summary = "Remover transação",

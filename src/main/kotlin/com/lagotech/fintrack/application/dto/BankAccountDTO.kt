@@ -21,7 +21,7 @@ import java.time.LocalDateTime
 data class BankAccountDTO(
 
     @Schema(description = "Identificador único da conta bancária", example = "1")
-    var id: Long? = null,
+    var id: Long = 0,
 
     @Schema(description = "Nome do banco", example = "Nubank")
     @field:NotBlank(message = "{generic.validation.notBlank}")
@@ -50,5 +50,5 @@ data class BankAccountDTO(
     var createdAt: LocalDateTime = LocalDateTime.now()
 
 ) : RepresentationModel<BankAccountDTO>() {
-    constructor() : this(null, "", "", "", "", LocalDateTime.now())
+    constructor() : this(0, "", "", "", "", LocalDateTime.now())
 }

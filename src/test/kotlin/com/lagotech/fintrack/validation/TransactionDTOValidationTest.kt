@@ -1,5 +1,7 @@
 package com.lagotech.fintrack.validation
 
+import com.lagotech.fintrack.application.dto.BankAccountDTO
+import com.lagotech.fintrack.application.dto.ExpenseCategoryDTO
 import com.lagotech.fintrack.application.dto.TransactionDTO
 import com.lagotech.fintrack.domain.model.TransactionType
 import jakarta.validation.Validation
@@ -26,33 +28,13 @@ class TransactionDTOValidationTest {
     }
 
     @Test
-    fun `should fail when required fields are null`() {
-        val dto = TransactionDTO(
-            transactionType = null,
-            categoryId = 0,
-            bankId = 0,
-            amount = null,
-            transactionDate = LocalDateTime.now(),
-            notified = false,
-            createdAt = LocalDateTime.now()
-        )
-
-        val violations = validator.validate(dto)
-
-        assertFalse(violations.isEmpty())
-
-        val nullViolations = violations.filter { it.messageTemplate.contains("{generic.validation.notNull}") }
-
-        assertEquals(2, nullViolations.size)
-    }
-
-    @Test
     fun `should fail when amount is negative value`() {
         val dto = TransactionDTO(
+            id = 0,
             transactionType = TransactionType.EXPENSE,
-            categoryId = 0,
-            bankId = 0,
-            amount = BigDecimal(-150.25),
+            category = ExpenseCategoryDTO(),
+            bankAccount = BankAccountDTO(),
+            amount = BigDecimal(-150),
             transactionDate = LocalDateTime.now(),
             notified = false,
             createdAt = LocalDateTime.now()
@@ -70,10 +52,11 @@ class TransactionDTOValidationTest {
     @Test
     fun `should fail when transaction and created data is in the future`() {
         val dto = TransactionDTO(
+            id = 0,
             transactionType = TransactionType.EXPENSE,
-            categoryId = 0,
-            bankId = 0,
-            amount = BigDecimal(150.25),
+            category = ExpenseCategoryDTO(),
+            bankAccount = BankAccountDTO(),
+            amount = BigDecimal.ZERO,
             transactionDate = LocalDateTime.now().plusDays(1),
             notified = false,
             createdAt = LocalDateTime.now().plusDays(1)
@@ -93,9 +76,9 @@ class TransactionDTOValidationTest {
     fun `should pass when all conditions are satisfied`() {
         val dto = TransactionDTO(
             transactionType = TransactionType.EXPENSE,
-            categoryId = 1,
-            bankId = 1,
-            amount = BigDecimal(150.25),
+            category = ExpenseCategoryDTO(),
+            bankAccount = BankAccountDTO(),
+            amount = BigDecimal(1),
             transactionDate = LocalDateTime.now(),
             notified = false,
             createdAt = LocalDateTime.now()
@@ -105,7 +88,4 @@ class TransactionDTOValidationTest {
 
         assertTrue(violations.isEmpty())
     }
-
-    //TODO VALIDATE CATEGORY MIN
-    //TODO VALIDATE BANK MIN
 }

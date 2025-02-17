@@ -2,7 +2,6 @@ package com.lagotech.fintrack.service
 
 import com.lagotech.fintrack.adapters.outbound.repository.BankAccountRepository
 import com.lagotech.fintrack.application.dto.BankAccountDTO
-import com.lagotech.fintrack.application.dto.ExpenseCategoryDTO
 import com.lagotech.fintrack.application.exception.ResourceNotFoundException
 import com.lagotech.fintrack.application.mapper.EntityToDTOMapper
 import com.lagotech.fintrack.application.mapper.EntityToDTOMapperImpl
@@ -13,9 +12,12 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.ArgumentMatchers.any
+import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mock
 import org.mockito.Mockito.`when`
 import org.mockito.junit.jupiter.MockitoExtension
+import org.springframework.context.MessageSource
 import java.util.*
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -29,6 +31,9 @@ class BankAccountServiceTest {
     @Mock
     private lateinit var repository: BankAccountRepository
 
+    @Mock
+    private lateinit var messageSource: MessageSource
+
     private val entityToDTOMapper: EntityToDTOMapper = EntityToDTOMapperImpl()
 
     private lateinit var mockBankAccount: BankAccountMock
@@ -36,11 +41,11 @@ class BankAccountServiceTest {
     @BeforeEach
     fun setUp() {
         mockBankAccount = BankAccountMock(entityToDTOMapper)
-        service = BankAccountService(repository, entityToDTOMapper)
+        service = BankAccountService(repository, entityToDTOMapper, messageSource)
     }
 
     @Test
-    fun save() {
+    fun `should save the transaction when all requirements are correct`() {
         val expectedDTO = mockBankAccount.mockBankAccountDTO()
         val entity = entityToDTOMapper.parseObject(expectedDTO, BankAccount::class.java)
 
@@ -56,20 +61,22 @@ class BankAccountServiceTest {
     }
 
     @Test
-    fun save_ShouldReturnException_WhenBankAlreadyExists() {
+    fun `should return an exception when account bank already exists`() {
         val bankAccount = mockBankAccount.mockBankAccountDTO()
 
         `when`(repository.existsByBankName(bankAccount.bankName)).thenReturn(true)
+        `when`(messageSource.getMessage(anyString(), any(), any()))
+            .thenReturn("Já existe um recurso com o valor informado: ${bankAccount.bankName}")
 
         val exception = assertThrows<IllegalArgumentException> {
             service.save(bankAccount)
         }
 
-        assertEquals("Banco com o nome ${bankAccount.bankName} já existe", exception.message)
+        assertEquals("Já existe um recurso com o valor informado: ${bankAccount.bankName}", exception.message)
     }
 
     @Test
-    fun findByName() {
+    fun `should return a account bank when category name exists`() {
         val bankName = "Itau"
         val bankAccountList = mockBankAccount.mockBankAccountDTOList()
 
@@ -80,11 +87,13 @@ class BankAccountServiceTest {
     }
 
     @Test
-    fun findByName_ShouldReturnException_WhenNotFound() {
+    fun `should return an exception when category name not exists`() {
         val bankName = ""
         val bankAccountList = emptyList<BankAccountDTO>()
 
         `when`(repository.findByBankNameContaining(bankName)).thenReturn(bankAccountList)
+        `when`(messageSource.getMessage(anyString(), any(), any()))
+            .thenReturn("Recurso não encontrado")
 
 
         val exception = assertThrows<ResourceNotFoundException> {
@@ -94,7 +103,7 @@ class BankAccountServiceTest {
     }
 
     @Test
-    fun findAll() {
+    fun `should return all account bank`() {
         val bankAccountList = mockBankAccount.mockBankAccountList()
 
         `when`(repository.findAll()).thenReturn(bankAccountList)
@@ -104,10 +113,12 @@ class BankAccountServiceTest {
     }
 
     @Test
-    fun findAll_ShouldReturnException_WhenNotFoundResources() {
+    fun `should return an exception when there is no account bank`() {
         val bankAccountList = emptyList<BankAccount>()
 
         `when`(repository.findAll()).thenReturn(bankAccountList)
+        `when`(messageSource.getMessage(anyString(), any(), any()))
+            .thenReturn("Recurso não encontrado")
 
         val exception = assertThrows<ResourceNotFoundException> {
             service.findAll()
@@ -117,10 +128,11 @@ class BankAccountServiceTest {
     }
 
     @Test
-    fun findById() {
+    fun `should return a category when account bank id exists`() {
         val id = 1L
         val entity = mockBankAccount.mockBankAccount()
-        val expectedDTO: Optional<BankAccountDTO> = Optional.of(entityToDTOMapper.parseObject(entity, BankAccountDTO::class.java))
+        val expectedDTO: Optional<BankAccountDTO> =
+            Optional.of(entityToDTOMapper.parseObject(entity, BankAccountDTO::class.java))
 
         `when`(repository.findById(id)).thenReturn(Optional.of(entity))
 
@@ -131,7 +143,7 @@ class BankAccountServiceTest {
     }
 
     @Test
-    fun existsByBankName() {
+    fun `should return true when category exists by name`() {
         val bankName = "Itau"
 
         `when`(repository.existsByBankName(bankName)).thenReturn(true)
@@ -141,7 +153,7 @@ class BankAccountServiceTest {
     }
 
     @Test
-    fun existsByBankName_ShouldReturnFalse_WhenBankDoesNotExist() {
+    fun `should return false when category not exists by name`() {
         val bankName = "NotExists"
 
         `when`(repository.existsByBankName(bankName)).thenReturn(false)
@@ -151,8 +163,48 @@ class BankAccountServiceTest {
         assertEquals(false, result)
     }
 
-    //TODO UPDATE SUCCESS
-    //TODO UPDATE EXCEPTION
-    //TODO DELETE EXCEPTION ID NOT EXITS
+    @Test
+    fun `should update successfully`() {
+        val id = 1L
+        val entity = mockBankAccount.mockBankAccount()
 
+        `when`(repository.findById(id)).thenReturn(Optional.of(entity))
+        `when`(repository.save(entity)).thenReturn(entity)
+
+        val result = service.update(id, entityToDTOMapper.parseObject(entity, BankAccountDTO::class.java))
+
+        assertNotNull(result)
+    }
+
+    @Test
+    fun `should thrown an exception on update when id not exists`() {
+        val id = 99L
+        val expectedDTO = mockBankAccount.mockBankAccountDTO()
+
+        `when`(repository.findById(id)).thenReturn(Optional.empty())
+        `when`(messageSource.getMessage(anyString(), any(), any()))
+            .thenReturn("Entidade com id $id não encontrada")
+
+        val exception = assertThrows<ResourceNotFoundException> {
+            service.update(id, expectedDTO)
+        }
+
+        assertEquals("Entidade com id $id não encontrada", exception.message)
+    }
+
+    @Test
+    fun `should thrown an exception on delete when id not exists`() {
+        val id = 99L
+        val expectedDTO = mockBankAccount.mockBankAccountDTO()
+
+        `when`(repository.findById(id)).thenReturn(Optional.empty())
+        `when`(messageSource.getMessage(anyString(), any(), any()))
+            .thenReturn("Entidade com id $id não encontrada")
+
+        val exception = assertThrows<ResourceNotFoundException> {
+            service.delete(id)
+        }
+
+        assertEquals("Entidade com id $id não encontrada", exception.message)
+    }
 }

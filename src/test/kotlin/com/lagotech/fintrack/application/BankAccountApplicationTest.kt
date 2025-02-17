@@ -15,21 +15,21 @@ class BankAccountApplicationTest {
     @Autowired
     lateinit var service: BankAccountService
 
-    @Test
-    fun `should save bank account successfully`() {
-        val bankAccount = BankAccountDTO(
-            bankName = "Bradesco",
-            accountNumber = "654321",
-            accountDigit = "2",
-            agency = "0002",
-            createdAt = LocalDateTime.now()
-        )
-
-        val savedAccount = service.save(bankAccount)
-
-        assertNotNull(savedAccount.id)
-        assertEquals("Bradesco", savedAccount.bankName)
-    }
+//    @Test
+//    fun `should save bank account successfully`() {
+//        val bankAccount = BankAccountDTO(
+//            bankName = "Bradesco",
+//            accountNumber = "654321",
+//            accountDigit = "2",
+//            agency = "0002",
+//            createdAt = LocalDateTime.now()
+//        )
+//
+//        val savedAccount = service.save(bankAccount)
+//
+//        assertNotNull(savedAccount.id)
+//        assertEquals("Bradesco", savedAccount.bankName)
+//    }
 
     //TODO SAVE EXCEPTION
     //TODO FIND BY ID

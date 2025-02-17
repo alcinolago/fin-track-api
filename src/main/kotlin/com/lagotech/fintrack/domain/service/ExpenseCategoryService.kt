@@ -5,19 +5,28 @@ import com.lagotech.fintrack.application.dto.ExpenseCategoryDTO
 import com.lagotech.fintrack.application.exception.ResourceNotFoundException
 import com.lagotech.fintrack.application.mapper.EntityToDTOMapper
 import com.lagotech.fintrack.domain.model.ExpenseCategory
+import org.springframework.context.MessageSource
+import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.stereotype.Service
 import java.util.*
 
 @Service
 class ExpenseCategoryService(
     private val repository: ExpenseCategoryRepository,
-    private val entityToDTOMapper: EntityToDTOMapper
+    private val entityToDTOMapper: EntityToDTOMapper,
+    private val messageSource: MessageSource
 ) {
 
     fun save(categoryDTO: ExpenseCategoryDTO): ExpenseCategoryDTO {
 
         if (existsByName(categoryDTO.name)) {
-            throw IllegalArgumentException("Categoria com o nome ${categoryDTO.name} já existe")
+            throw IllegalArgumentException(
+                messageSource.getMessage(
+                    "{generic.validation.already.exists}",
+                    arrayOf(categoryDTO.name),
+                    LocaleContextHolder.getLocale()
+                )
+            )
         }
 
         val entity = entityToDTOMapper.parseObject(categoryDTO, ExpenseCategory::class.java)
@@ -31,7 +40,13 @@ class ExpenseCategoryService(
         val expenseCategory = repository.findByNameContaining(name)
 
         if (expenseCategory.isEmpty()) {
-            throw ResourceNotFoundException("Recurso não encontrado")
+            throw ResourceNotFoundException(
+                messageSource.getMessage(
+                    "{generic.validation.resource.notFound}",
+                    null,
+                    LocaleContextHolder.getLocale()
+                )
+            )
         }
 
         return entityToDTOMapper.parseListObjects(expenseCategory, ExpenseCategoryDTO::class.java)
@@ -42,7 +57,13 @@ class ExpenseCategoryService(
         val expenseCategoryList = repository.findAll()
 
         if (expenseCategoryList.isEmpty()) {
-            throw ResourceNotFoundException("Recurso não encontrado")
+            throw ResourceNotFoundException(
+                messageSource.getMessage(
+                    "{generic.validation.resource.notFound}",
+                    null,
+                    LocaleContextHolder.getLocale()
+                )
+            )
         }
         return entityToDTOMapper.parseListObjects(expenseCategoryList, ExpenseCategoryDTO::class.java)
     }
@@ -58,9 +79,16 @@ class ExpenseCategoryService(
 
     fun update(id: Long, categoryDTO: ExpenseCategoryDTO): ExpenseCategoryDTO {
         val existingCategory = repository.findById(id)
-            .orElseThrow { ResourceNotFoundException("Categoria com ID $id não encontrada") }
+            .orElseThrow {
+                ResourceNotFoundException(
+                    messageSource.getMessage(
+                        "{generic.validation.entity.id.notFound}",
+                        arrayOf(id),
+                        LocaleContextHolder.getLocale()
+                    )
+                )
+            }
 
-        // Atualizando os campos
         existingCategory.name = categoryDTO.name
         existingCategory.description = categoryDTO.description
         existingCategory.color = categoryDTO.color
@@ -70,9 +98,17 @@ class ExpenseCategoryService(
         return entityToDTOMapper.parseObject(savedCategory, ExpenseCategoryDTO::class.java)
     }
 
-    fun delete(categoryId: Long) {
-        val category = repository.findById(categoryId)
-            .orElseThrow { ResourceNotFoundException("Category with id $categoryId not found") }
+    fun delete(id: Long) {
+        val category = repository.findById(id)
+            .orElseThrow {
+                ResourceNotFoundException(
+                    messageSource.getMessage(
+                        "{generic.validation.entity.id.notFound}",
+                        arrayOf(id),
+                        LocaleContextHolder.getLocale()
+                    )
+                )
+            }
 
         repository.delete(category)
     }
