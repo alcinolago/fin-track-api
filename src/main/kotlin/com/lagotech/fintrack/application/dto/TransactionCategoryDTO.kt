@@ -19,7 +19,7 @@ import java.time.LocalDateTime
     }"""
 )
 @Relation(collectionRelation = "categories")
-data class ExpenseCategoryDTO(
+data class TransactionCategoryDTO(
 
     @Schema(description = "Identificador único da conta bancária", example = "1")
     var id: Long = 0,
@@ -44,6 +44,6 @@ data class ExpenseCategoryDTO(
     @field:PastOrPresent(message = "{generic.validation.createdAt.pastOrPresent}")
     var createdAt: LocalDateTime = LocalDateTime.now()
 
-) : RepresentationModel<ExpenseCategoryDTO>() {
+) : RepresentationModel<TransactionCategoryDTO>() {
     constructor() : this(0, "", "", "", LocalDateTime.now())
 }

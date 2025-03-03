@@ -2,6 +2,7 @@ package com.lagotech.fintrack.application.exception
 
 import io.swagger.v3.oas.annotations.Hidden
 import org.springframework.context.MessageSource
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.http.converter.HttpMessageNotReadableException
@@ -136,6 +137,29 @@ class RestApiErrorHandler(private val messageSource: MessageSource) {
 
         val errorMessage = messageSource.getMessage(
             "exception.badRequest",
+            null,
+            request.locale
+        )
+
+        val apiError = ApiError(
+            HttpStatus.BAD_REQUEST.value(),
+            errorMessage
+        )
+
+        val response = ApiResponse(apiError)
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response)
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException::class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    fun handleDataIntegrityViolationException(
+        ex: DataIntegrityViolationException,
+        request: WebRequest
+    ): ResponseEntity<ApiResponse> {
+
+        val errorMessage = messageSource.getMessage(
+            "exception.unique.violation",
             null,
             request.locale
         )

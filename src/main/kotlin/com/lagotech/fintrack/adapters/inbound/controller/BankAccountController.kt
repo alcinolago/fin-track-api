@@ -1,8 +1,11 @@
 package com.lagotech.fintrack.adapters.inbound.controller
 
-import com.lagotech.fintrack.application.dto.BankAccountDTO
 import com.lagotech.fintrack.application.exception.ResourceNotFoundException
+import com.lagotech.fintrack.application.extension.BankAccountMapper
+import com.lagotech.fintrack.application.request.BankAccountRequest
+import com.lagotech.fintrack.application.response.BankAccountResponse
 import com.lagotech.fintrack.domain.service.BankAccountService
+import com.lagotech.fintrack.domain.service.UserService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
@@ -15,81 +18,92 @@ import org.springframework.web.bind.annotation.*
 @Tag(name = "Conta Bancária", description = "Gerencia as contas bancárias")
 @RestController
 @RequestMapping("/bank")
-class BankAccountController(private val service: BankAccountService) {
+class BankAccountController(
+    private val service: BankAccountService,
+    private val userService: UserService
+) {
 
-    @Operation(
-        summary = "Cadastrar uma nova conta bancária",
-        description = "Salva uma nova conta bancária no sistema."
-    )
+    @Operation(summary = "Cadastrar uma nova conta bancária")
     @PostMapping
-    fun createBank(@Valid @RequestBody bank: BankAccountDTO): ResponseEntity<BankAccountDTO> {
-        val createdBank =
-            service.save(bank).add(linkTo(BankAccountController::class.java).slash(bank.id).withSelfRel())
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdBank)
+    fun save(@Valid @RequestBody req: BankAccountRequest): ResponseEntity<BankAccountResponse> {
+
+        val user = userService.findById(req.userId)
+            .orElseThrow { ResourceNotFoundException("") }
+
+        val savedBankAccount = service.save(BankAccountMapper.toEntity(req, user))
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(BankAccountMapper.toResponse(savedBankAccount))
     }
 
-    @Operation(
-        summary = "Listar contas bancárias",
-        description = "Listar todas as contas bancárias."
-    )
-    @GetMapping
-    fun findAll(): ResponseEntity<List<BankAccountDTO>> {
+    @Operation(summary = "Listar conta bancária")
+    @GetMapping("/accounts/{userId}/account")
+    fun findByUserId(@PathVariable("userId") userId: Long): ResponseEntity<List<BankAccountResponse>> {
 
-        val bank = service.findAll()
-
-        bank.forEach { bankDTO ->
-            bankDTO.add(linkTo(BankAccountController::class.java).slash(bankDTO.id).withSelfRel())
+        if (userId <= 0) {
+            throw ResourceNotFoundException("Id invalido")
         }
-        return ResponseEntity.status(HttpStatus.OK).body(bank)
+
+        val bankAccounts = service.findByUserId(userId)
+
+        if (bankAccounts.isEmpty()) {
+            return ResponseEntity.noContent().build()
+        }
+
+        return ResponseEntity.ok().body(BankAccountMapper.toResponseList(bankAccounts))
     }
 
-    @Operation(
-        summary = "Buscar conta bancária por ID",
-        description = "Retorna uma conta bancária específica pelo seu ID",
-    )
+    @Operation(summary = "Buscar conta bancária por ID")
     @GetMapping("/{bankId}")
-    fun findById(@PathVariable("bankId") bankId: Long): ResponseEntity<BankAccountDTO> {
+    fun findById(@PathVariable("bankId") bankId: Long): ResponseEntity<BankAccountResponse> {
 
         val bank = service.findById(bankId)
             .orElseThrow { ResourceNotFoundException("BankAccount with id $bankId not found") }
 
-        val response = bank.add(linkTo(BankAccountController::class.java).slash(bank.id).withSelfRel())
+        val response = BankAccountMapper.toResponse(bank)
+            .add(linkTo(BankAccountController::class.java).slash(bank.id).withSelfRel())
 
         return ResponseEntity.status(HttpStatus.OK).body(response)
     }
 
-    @Operation(
-        summary = "Atualizar Conta Bancária",
-        description = "Atualizar Conta Bancária pelo id informado."
-    )
+    @Operation(summary = "Atualizar Conta Bancária")
     @PutMapping("/{bankId}")
-    fun updatebank(
+    fun update(
         @PathVariable("bankId") bankId: Long,
-        @Valid @RequestBody bankDTO: BankAccountDTO
-    ): ResponseEntity<BankAccountDTO> {
+        @Valid @RequestBody req: BankAccountRequest
+    ): ResponseEntity<BankAccountResponse> {
 
         if (bankId <= 0) {
             throw IllegalArgumentException("ID must be provided and greater than zero")
         }
 
-        val updatedbank = service.update(bankId, bankDTO)
+        val bankAccount = service.findById(bankId)
+            .orElseThrow { ResourceNotFoundException("Id inexistente") }
+
+        bankAccount.bankName = req.bankName
+        bankAccount.accountNumber = req.accountNumber
+        bankAccount.accountDigit = req.accountDigit
+        bankAccount.agency = req.agency
+        bankAccount.balance = req.balance
+
+        val updatedbank = service.update(bankAccount)
 
         updatedbank.add(linkTo(methodOn(BankAccountController::class.java).findById(bankId)).withSelfRel())
 
         return ResponseEntity.ok(updatedbank)
     }
 
-    @Operation(
-        summary = "Remover Conta Bancária",
-        description = "Remover Conta Bancária pelo id informado."
-    )
+    @Operation(summary = "Apagar Conta Bancária")
     @DeleteMapping("/{bankId}")
     fun deletebank(@PathVariable("bankId") bankId: Long): ResponseEntity<Unit> {
+
         if (bankId <= 0) {
             throw IllegalArgumentException("ID must be greater than zero")
         }
 
-        service.delete(bankId)
+        val bankAccount = service.findById(bankId)
+            .orElseThrow { ResourceNotFoundException("Id inexistente") }
+
+        service.delete(bankAccount)
 
         return ResponseEntity.noContent().build()
     }

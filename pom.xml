@@ -53,6 +53,14 @@
 			<artifactId>kotlin-stdlib</artifactId>
 		</dependency>
 
+		<!-- Kotlin Jpa Support -->
+		<dependency>
+			<groupId>org.jetbrains.kotlin.plugin.jpa</groupId>
+			<artifactId>org.jetbrains.kotlin.plugin.jpa.gradle.plugin</artifactId>
+			<version>2.1.10</version>
+			<type>pom</type>
+		</dependency>
+
 		<!-- Dozer Mapper -->
 		<dependency>
 			<groupId>com.github.dozermapper</groupId>
@@ -81,13 +89,6 @@
 			<optional>true</optional>
 		</dependency>
 
-		<!-- H2 Database -->
-		<dependency>
-			<groupId>com.h2database</groupId>
-			<artifactId>h2</artifactId>
-			<scope>runtime</scope>
-		</dependency>
-
 		<!-- Postgres -->
 		<dependency>
 			<groupId>org.postgresql</groupId>
@@ -102,13 +103,14 @@
 			<version>11.3.2</version>
 		</dependency>
 
-		<!-- Flyaway Migrations - Postgres -->
+		<!-- Flyway Postgresql -->
 		<dependency>
 			<groupId>org.flywaydb</groupId>
 			<artifactId>flyway-database-postgresql</artifactId>
 			<version>11.3.2</version>
 			<scope>runtime</scope>
 		</dependency>
+
 
 		<!-- Validation -->
 		<dependency>

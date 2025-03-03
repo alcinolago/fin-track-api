@@ -1,11 +1,16 @@
 package com.lagotech.fintrack.application.dto
 
+import com.fasterxml.jackson.annotation.JsonIgnore
+import com.lagotech.fintrack.domain.model.User
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.PastOrPresent
 import jakarta.validation.constraints.Pattern
+import jakarta.validation.constraints.Positive
 import jakarta.validation.constraints.Size
 import org.springframework.hateoas.RepresentationModel
+import java.math.BigDecimal
 import java.time.LocalDateTime
 
 @Schema(
@@ -21,7 +26,7 @@ import java.time.LocalDateTime
 data class BankAccountDTO(
 
     @Schema(description = "Identificador único da conta bancária", example = "1")
-    var id: Long = 0,
+    var id: Long? = null,
 
     @Schema(description = "Nome do banco", example = "Nubank")
     @field:NotBlank(message = "{generic.validation.notBlank}")
@@ -45,10 +50,18 @@ data class BankAccountDTO(
     @field:Pattern(regexp = "\\d+", message = "{generic.validation.mustBeNumber}")
     var agency: String,
 
-    @Schema(description = "Data de criação do registro", example = "2025-02-14T14:00:00")
-    @field:PastOrPresent(message = "{generic.validation.createdAt.pastOrPresent}")
-    var createdAt: LocalDateTime = LocalDateTime.now()
+    @Schema(description = "Saldo disponível na conta")
+    @field:NotNull
+    @field:Positive
+    var balance: BigDecimal
 
 ) : RepresentationModel<BankAccountDTO>() {
-    constructor() : this(0, "", "", "", "", LocalDateTime.now())
+    constructor() : this(
+        id = null,
+        bankName = "",
+        accountNumber = "",
+        accountDigit = "",
+        agency = "",
+        balance = BigDecimal.ZERO
+    )
 }

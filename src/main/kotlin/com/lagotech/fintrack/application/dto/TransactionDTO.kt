@@ -1,8 +1,7 @@
 package com.lagotech.fintrack.application.dto
 
-import com.lagotech.fintrack.domain.model.TransactionType
+import com.lagotech.fintrack.domain.type.TransactionType
 import io.swagger.v3.oas.annotations.media.Schema
-import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.PastOrPresent
 import jakarta.validation.constraints.Positive
@@ -36,7 +35,7 @@ data class TransactionDTO(
 
     @Schema(description = "ID da categoria da despesa", example = "10")
     @field:NotNull(message = "{generic.validation.notNull}")
-    var category: ExpenseCategoryDTO,
+    var category: TransactionCategoryDTO,
 
     @Schema(description = "ID da conta bancária associada", example = "5")
     @field:NotNull(message = "{generic.validation.notNull}")
@@ -62,7 +61,7 @@ data class TransactionDTO(
     constructor() : this(
         id = 0,
         transactionType = TransactionType.EXPENSE,
-        category = ExpenseCategoryDTO(),
+        category = TransactionCategoryDTO(),
         bankAccount = BankAccountDTO(),
         amount = BigDecimal.ZERO,
         transactionDate = LocalDateTime.now(),

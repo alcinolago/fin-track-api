@@ -1,24 +1,9 @@
 package com.lagotech.fintrack.adapters.inbound.controller
 
-import com.lagotech.fintrack.application.dto.TransactionDTO
-import com.lagotech.fintrack.application.exception.ResourceNotFoundException
 import com.lagotech.fintrack.domain.service.BankAccountService
-import com.lagotech.fintrack.domain.service.ExpenseCategoryService
+import com.lagotech.fintrack.domain.service.TransactionCategoryService
 import com.lagotech.fintrack.domain.service.TransactionService
-import io.swagger.v3.oas.annotations.Operation
-import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.tags.Tag
-import jakarta.validation.Valid
-import org.springframework.data.domain.Page
-import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Pageable
-import org.springframework.data.domain.Sort
-import org.springframework.data.web.PagedResourcesAssembler
-import org.springframework.hateoas.EntityModel
-import org.springframework.hateoas.PagedModel
-import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo
-import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @Tag(name = "Transações", description = "Gerencia as transações financeiras")
@@ -26,11 +11,16 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/transaction")
 class TransactionController(
     private val service: TransactionService,
-    private val categoryService: ExpenseCategoryService,
+    private val categoryService: TransactionCategoryService,
     private val accountService: BankAccountService
 ) {
 
-    @Operation(
+    @GetMapping
+    fun getBudget() : String{
+        return "Seja bem vindo"
+    }
+
+   /* @Operation(
         summary = "Criar uma nova transação",
         description = "Salva uma nova transação no sistema."
     )
@@ -126,4 +116,5 @@ class TransactionController(
 
         return ResponseEntity.noContent().build()
     }
+    */
 }

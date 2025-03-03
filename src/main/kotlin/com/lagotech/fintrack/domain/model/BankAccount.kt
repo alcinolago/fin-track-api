@@ -1,15 +1,18 @@
 package com.lagotech.fintrack.domain.model
 
+import com.fasterxml.jackson.annotation.JsonBackReference
 import jakarta.persistence.*
-import java.time.LocalDateTime
+import org.hibernate.Hibernate
+import java.math.BigDecimal
 
 @Entity
 @Table(name = "bank_accounts")
-data class BankAccount(
+class BankAccount(
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long = 0,
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "bank_account_seq")
+    @SequenceGenerator(name = "bank_account_seq", sequenceName = "bank_account_seq", allocationSize = 1)
+    var id: Long? = null,
 
     @Column(name = "bank_name", nullable = false, length = 100)
     var bankName: String,
@@ -23,8 +26,36 @@ data class BankAccount(
     @Column(name = "agency", nullable = false, length = 10)
     var agency: String,
 
-    @Column(name = "created_at", nullable = false)
-    var createdAt: LocalDateTime = LocalDateTime.now()
+    @Column(nullable = false)
+    var balance: BigDecimal = BigDecimal.ZERO,
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    @JsonBackReference
+    var user: User
 ) {
-    constructor() : this(0, "", "", "", "", LocalDateTime.now())
+    constructor() : this(
+        id = null,
+        bankName = "",
+        accountNumber = "",
+        accountDigit = "",
+        agency = "",
+        balance = BigDecimal.ZERO,
+        user = User()
+    )
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other == null || Hibernate.getClass(this) != Hibernate.getClass(other)) return false
+        other as BankAccount
+
+        return id != null && id == other.id
+    }
+
+    override fun hashCode(): Int = javaClass.hashCode()
+
+    @Override
+    override fun toString(): String {
+        return this::class.simpleName + "BankAccount(id = $id , bankName = $bankName , accountNumber = $accountNumber, accountDigit = $accountDigit, agency = $agency, balance = $balance )"
+    }
 }

@@ -1,6 +1,6 @@
 package com.lagotech.fintrack.validation
 
-import com.lagotech.fintrack.application.dto.ExpenseCategoryDTO
+import com.lagotech.fintrack.application.dto.TransactionCategoryDTO
 import jakarta.validation.Validation
 import jakarta.validation.Validator
 import org.junit.jupiter.api.Assertions.*
@@ -11,7 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension
 import java.time.LocalDateTime
 
 @ExtendWith(MockitoExtension::class)
-class ExpenseCategoryDTOValidationTest {
+class TransactionCategoryDTOValidationTest {
 
     private lateinit var validator: Validator
 
@@ -23,7 +23,7 @@ class ExpenseCategoryDTOValidationTest {
 
     @Test
     fun `should fail when required fields are blank`() {
-        val dto = ExpenseCategoryDTO(
+        val dto = TransactionCategoryDTO(
             name = "",
             description = "",
             color = "",
@@ -41,7 +41,7 @@ class ExpenseCategoryDTOValidationTest {
 
     @Test
     fun `should fail when name has less than 3 or more than 50 characters`() {
-        val dto = ExpenseCategoryDTO(
+        val dto = TransactionCategoryDTO(
             name = "a",
             description = "",
             color = "#FFFFFF",
@@ -59,7 +59,7 @@ class ExpenseCategoryDTOValidationTest {
 
     @Test
     fun `should fail when color is not hexadecimal format #FFFFFF`() {
-        val dto = ExpenseCategoryDTO(
+        val dto = TransactionCategoryDTO(
             name = "a",
             description = "",
             color = "red",
@@ -78,7 +78,7 @@ class ExpenseCategoryDTOValidationTest {
 
     @Test
     fun `should fail when created at is in the future`() {
-        val dto = ExpenseCategoryDTO(
+        val dto = TransactionCategoryDTO(
             name = "Luz",
             description = "Conta de Luz",
             color = "#FFFFFF",
@@ -97,7 +97,7 @@ class ExpenseCategoryDTOValidationTest {
 
     @Test
     fun `should pass when all conditions are satisfied`() {
-        val dto = ExpenseCategoryDTO(
+        val dto = TransactionCategoryDTO(
             name = "Luz",
             description = "Conta de Luz",
             color = "#FFFFFF",

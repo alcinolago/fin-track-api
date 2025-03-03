@@ -1,24 +1,18 @@
 package com.lagotech.fintrack.application
 
-import com.lagotech.fintrack.adapters.outbound.repository.ExpenseCategoryRepository
-import com.lagotech.fintrack.application.dto.ExpenseCategoryDTO
-import com.lagotech.fintrack.domain.model.ExpenseCategory
-import com.lagotech.fintrack.domain.service.ExpenseCategoryService
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNotNull
-import org.junit.jupiter.api.Test
+import com.lagotech.fintrack.adapters.outbound.repository.TransactionCategoryRepository
+import com.lagotech.fintrack.domain.service.TransactionCategoryService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import java.time.LocalDateTime
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ExpenseCategoryApplicationTest {
 
     @Autowired
-    private lateinit var service: ExpenseCategoryService
+    private lateinit var service: TransactionCategoryService
 
     @Autowired
-    private lateinit var repository: ExpenseCategoryRepository
+    private lateinit var repository: TransactionCategoryRepository
 
 //    @Test
 //    fun `should save expense category successfully`() {

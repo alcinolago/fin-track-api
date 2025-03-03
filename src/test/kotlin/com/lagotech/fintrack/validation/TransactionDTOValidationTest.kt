@@ -1,9 +1,9 @@
 package com.lagotech.fintrack.validation
 
 import com.lagotech.fintrack.application.dto.BankAccountDTO
-import com.lagotech.fintrack.application.dto.ExpenseCategoryDTO
+import com.lagotech.fintrack.application.dto.TransactionCategoryDTO
 import com.lagotech.fintrack.application.dto.TransactionDTO
-import com.lagotech.fintrack.domain.model.TransactionType
+import com.lagotech.fintrack.domain.type.TransactionType
 import jakarta.validation.Validation
 import jakarta.validation.Validator
 import org.junit.jupiter.api.Assertions.assertFalse
@@ -32,7 +32,7 @@ class TransactionDTOValidationTest {
         val dto = TransactionDTO(
             id = 0,
             transactionType = TransactionType.EXPENSE,
-            category = ExpenseCategoryDTO(),
+            category = TransactionCategoryDTO(),
             bankAccount = BankAccountDTO(),
             amount = BigDecimal(-150),
             transactionDate = LocalDateTime.now(),
@@ -54,7 +54,7 @@ class TransactionDTOValidationTest {
         val dto = TransactionDTO(
             id = 0,
             transactionType = TransactionType.EXPENSE,
-            category = ExpenseCategoryDTO(),
+            category = TransactionCategoryDTO(),
             bankAccount = BankAccountDTO(),
             amount = BigDecimal.ZERO,
             transactionDate = LocalDateTime.now().plusDays(1),
@@ -76,7 +76,7 @@ class TransactionDTOValidationTest {
     fun `should pass when all conditions are satisfied`() {
         val dto = TransactionDTO(
             transactionType = TransactionType.EXPENSE,
-            category = ExpenseCategoryDTO(),
+            category = TransactionCategoryDTO(),
             bankAccount = BankAccountDTO(),
             amount = BigDecimal(1),
             transactionDate = LocalDateTime.now(),

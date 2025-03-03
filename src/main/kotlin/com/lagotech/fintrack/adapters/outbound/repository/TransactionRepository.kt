@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
 
 @Repository
-interface TransactionRepository : JpaRepository<Transaction, Long>{
+interface TransactionRepository : JpaRepository<Transaction, Long> {
 
     @EntityGraph(attributePaths = ["category", "bankAccount"])
     @Query("SELECT t FROM Transaction t")

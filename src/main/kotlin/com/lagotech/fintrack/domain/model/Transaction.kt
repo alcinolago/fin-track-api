@@ -1,6 +1,9 @@
 package com.lagotech.fintrack.domain.model
 
+import com.lagotech.fintrack.domain.type.TransactionStatus
+import com.lagotech.fintrack.domain.type.TransactionType
 import jakarta.persistence.*
+import org.hibernate.Hibernate
 import java.math.BigDecimal
 import java.time.LocalDateTime
 
@@ -9,47 +12,47 @@ import java.time.LocalDateTime
 data class Transaction(
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long = 0,
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "transactions_seq")
+    @SequenceGenerator(name = "transactions_seq", sequenceName = "transactions_seq", allocationSize = 1)
+    var id: Long? = null,
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "transaction_type", nullable = false)
-    var transactionType: TransactionType,
-
-    //@Column(name = "category_id", nullable = false)
-    //var categoryId: Long = 0,
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "category_id", nullable = false)
-    var category: ExpenseCategory,
-
-    //@Column(name = "bank_id", nullable = false)
-    //var bankId: Long = 0,
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "bank_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "bank_account_id", nullable = false)
     var bankAccount: BankAccount,
 
-    @Column(name = "amount", nullable = false)
+    @Column(nullable = false)
     var amount: BigDecimal,
 
-    @Column(name = "transaction_date", nullable = false)
-    var transactionDate: LocalDateTime,
-
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    var notified: Boolean = false,
+    var type: TransactionType,
 
-    @Column(name = "created_at", nullable = false)
-    var createdAt: LocalDateTime = LocalDateTime.now()
+    @Column(name = "due_date", nullable = true)
+    var dueDate: LocalDateTime? = null,
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    var status: TransactionStatus = TransactionStatus.PAID
 ) {
     constructor() : this(
-        0,
-        TransactionType.EXPENSE,
-        ExpenseCategory(),
-        BankAccount(),
-        BigDecimal.ZERO,
-        LocalDateTime.now(),
-        false,
-        LocalDateTime.now()
+        id = null,
+        bankAccount = BankAccount(),
+        amount = BigDecimal.ZERO,
+        type = TransactionType.EXPENSE,
+        dueDate = null,
+        status = TransactionStatus.PAID
     )
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other == null || Hibernate.getClass(this) != Hibernate.getClass(other)) return false
+        other as Transaction
+        return id != null && id == other.id
+    }
+
+    override fun hashCode(): Int = javaClass.hashCode()
+
+    override fun toString(): String {
+        return "Transaction(id=$id, bankAccount=$bankAccount, amount=$amount, type=$type, dueDate=$dueDate, status=$status)"
+    }
 }

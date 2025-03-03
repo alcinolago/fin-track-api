@@ -1,22 +1,22 @@
 package com.lagotech.fintrack.mocks
 
-import com.lagotech.fintrack.application.dto.ExpenseCategoryDTO
+import com.lagotech.fintrack.application.dto.TransactionCategoryDTO
 import com.lagotech.fintrack.application.mapper.EntityToDTOMapper
-import com.lagotech.fintrack.domain.model.ExpenseCategory
+import com.lagotech.fintrack.domain.model.TransactionCategory
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
 
 @Component
 class ExpenseCategoryMock(private val entityToDTOMapper: EntityToDTOMapper) {
 
-    fun mockExpenseCategoryDTO(): ExpenseCategoryDTO {
-        return ExpenseCategoryDTO(1, "Food", "Food expenses", "#0000ff", LocalDateTime.of(2025, 2, 25, 14, 30))
+    fun mockExpenseCategoryDTO(): TransactionCategoryDTO {
+        return TransactionCategoryDTO(1, "Food", "Food expenses", "#0000ff", LocalDateTime.of(2025, 2, 25, 14, 30))
     }
 
-    fun mockExpenseCategoryDTOList(): List<ExpenseCategoryDTO> {
+    fun mockExpenseCategoryDTOList(): List<TransactionCategoryDTO> {
         return listOf(
-            ExpenseCategoryDTO(1, "Food", "Food expenses", "#0000ff", LocalDateTime.of(2025, 2, 25, 14, 30, 0, 0)),
-            ExpenseCategoryDTO(
+            TransactionCategoryDTO(1, "Food", "Food expenses", "#0000ff", LocalDateTime.of(2025, 2, 25, 14, 30, 0, 0)),
+            TransactionCategoryDTO(
                 2,
                 "Transport",
                 "Transport expenses",
@@ -26,36 +26,36 @@ class ExpenseCategoryMock(private val entityToDTOMapper: EntityToDTOMapper) {
         )
     }
 
-    fun mockExpenseCategory(): ExpenseCategory {
-        return ExpenseCategory(1, "Food", "Food expenses", "#0000ff", LocalDateTime.of(2025, 2, 25, 14, 30, 0, 0))
+//    fun mockExpenseCategory(): TransactionCategory {
+//        return TransactionCategory(1, "Food", "Food expenses", "#0000ff", LocalDateTime.of(2025, 2, 25, 14, 30, 0, 0))
+//    }
+//
+//    fun mockExpenseCategoryList(): List<TransactionCategory> {
+//        return listOf(
+//            TransactionCategory(1, "Food", "Food expenses", "#0000ff", LocalDateTime.of(2025, 2, 25, 14, 30, 0, 0)),
+//            TransactionCategory(
+//                2,
+//                "Transport",
+//                "Transport expenses",
+//                "#ff0000",
+//                LocalDateTime.of(2025, 2, 25, 14, 30, 0, 0)
+//            )
+//        )
+//    }
+
+//    fun mockEntityToDTO(): TransactionCategoryDTO {
+//        return entityToDTOMapper.parseObject(mockExpenseCategory(), TransactionCategoryDTO::class.java)
+//    }
+
+    fun mockDTOToEntity(): TransactionCategory {
+        return entityToDTOMapper.parseObject(mockExpenseCategoryDTO(), TransactionCategory::class.java)
     }
 
-    fun mockExpenseCategoryList(): List<ExpenseCategory> {
-        return listOf(
-            ExpenseCategory(1, "Food", "Food expenses", "#0000ff", LocalDateTime.of(2025, 2, 25, 14, 30, 0, 0)),
-            ExpenseCategory(
-                2,
-                "Transport",
-                "Transport expenses",
-                "#ff0000",
-                LocalDateTime.of(2025, 2, 25, 14, 30, 0, 0)
-            )
-        )
-    }
+//    fun mockEntityListToDTOList(): List<TransactionCategoryDTO> {
+//        return entityToDTOMapper.parseListObjects(mockExpenseCategoryList(), TransactionCategoryDTO::class.java)
+//    }
 
-    fun mockEntityToDTO(): ExpenseCategoryDTO {
-        return entityToDTOMapper.parseObject(mockExpenseCategory(), ExpenseCategoryDTO::class.java)
-    }
-
-    fun mockDTOToEntity(): ExpenseCategory {
-        return entityToDTOMapper.parseObject(mockExpenseCategoryDTO(), ExpenseCategory::class.java)
-    }
-
-    fun mockEntityListToDTOList(): List<ExpenseCategoryDTO> {
-        return entityToDTOMapper.parseListObjects(mockExpenseCategoryList(), ExpenseCategoryDTO::class.java)
-    }
-
-    fun mockDTOListToEntityList(): List<ExpenseCategory> {
-        return entityToDTOMapper.parseListObjects(mockExpenseCategoryDTOList(), ExpenseCategory::class.java)
+    fun mockDTOListToEntityList(): List<TransactionCategory> {
+        return entityToDTOMapper.parseListObjects(mockExpenseCategoryDTOList(), TransactionCategory::class.java)
     }
 }

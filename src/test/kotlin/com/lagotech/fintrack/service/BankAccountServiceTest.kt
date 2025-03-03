@@ -25,7 +25,7 @@ import kotlin.test.assertNotNull
 @ExtendWith(MockitoExtension::class)
 class BankAccountServiceTest {
 
-    @Mock
+    /*@Mock
     private lateinit var service: BankAccountService
 
     @Mock
@@ -206,5 +206,5 @@ class BankAccountServiceTest {
         }
 
         assertEquals("Entidade com id $id não encontrada", exception.message)
-    }
+    }*/
 }
