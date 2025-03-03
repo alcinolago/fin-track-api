@@ -7,7 +7,6 @@ import com.lagotech.fintrack.application.response.SavingsGoalResponse
 import com.lagotech.fintrack.domain.service.SavingsGoalService
 import com.lagotech.fintrack.domain.service.UserService
 import io.swagger.v3.oas.annotations.tags.Tag
-import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*

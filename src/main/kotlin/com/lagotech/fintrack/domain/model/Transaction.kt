@@ -9,7 +9,7 @@ import java.time.LocalDateTime
 
 @Entity
 @Table(name = "transactions")
-data class Transaction(
+class Transaction(
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "transactions_seq")

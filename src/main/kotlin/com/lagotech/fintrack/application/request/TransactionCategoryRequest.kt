@@ -4,6 +4,15 @@ import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.constraints.*
 import org.springframework.hateoas.server.core.Relation
 
+@Schema(
+    hidden = true,
+    contentMediaType = "application/json",
+    example = """{
+        "name": "Transporte",
+        "description": "Transporte",
+        "color": "#0000FF"
+    }"""
+)
 @Relation(collectionRelation = "categories")
 data class TransactionCategoryRequest(
 

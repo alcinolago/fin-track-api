@@ -85,16 +85,16 @@ class BankAccountController(
         bankAccount.agency = req.agency
         bankAccount.balance = req.balance
 
-        val updatedbank = service.update(bankAccount)
+        val response = service.update(bankAccount)
 
-        updatedbank.add(linkTo(methodOn(BankAccountController::class.java).findById(bankId)).withSelfRel())
+        response.add(linkTo(methodOn(BankAccountController::class.java).findById(bankId)).withSelfRel())
 
-        return ResponseEntity.ok(updatedbank)
+        return ResponseEntity.ok(response)
     }
 
     @Operation(summary = "Apagar Conta Bancária")
     @DeleteMapping("/{bankId}")
-    fun deletebank(@PathVariable("bankId") bankId: Long): ResponseEntity<Unit> {
+    fun delete(@PathVariable("bankId") bankId: Long): ResponseEntity<Unit> {
 
         if (bankId <= 0) {
             throw IllegalArgumentException("ID must be greater than zero")

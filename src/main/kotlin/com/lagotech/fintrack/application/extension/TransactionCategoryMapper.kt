@@ -30,6 +30,6 @@ object TransactionCategoryMapper {
     }
 
     fun toResponseList(categories: List<TransactionCategory>): List<TransactionCategoryResponse> {
-        return categories.map { TransactionCategoryMapper.toResponse(it) }
+        return categories.map { toResponse(it) }
     }
 }

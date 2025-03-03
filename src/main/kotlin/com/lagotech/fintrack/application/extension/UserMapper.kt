@@ -33,6 +33,6 @@ object UserMapper {
     }
 
     fun toResponseList(users: List<User>): List<UserResponse> {
-        return users.map { UserMapper.toResponse(it) }
+        return users.map { toResponse(it) }
     }
 }

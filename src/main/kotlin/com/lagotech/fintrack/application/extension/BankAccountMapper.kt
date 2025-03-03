@@ -41,6 +41,6 @@ object BankAccountMapper {
     }
 
     fun toResponseList(accounts: List<BankAccount>): List<BankAccountResponse> {
-        return accounts.map { BankAccountMapper.toResponse(it) }
+        return accounts.map { toResponse(it) }
     }
 }

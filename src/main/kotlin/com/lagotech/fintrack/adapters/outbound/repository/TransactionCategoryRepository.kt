@@ -9,6 +9,5 @@ import org.springframework.stereotype.Repository
 @Repository
 interface TransactionCategoryRepository : JpaRepository<TransactionCategory, Long?> {
     override fun findAll(pageable: Pageable): Page<TransactionCategory>
-    fun findByNameContaining(name: String): List<TransactionCategory>
     fun existsByName(name: String): Boolean
 }

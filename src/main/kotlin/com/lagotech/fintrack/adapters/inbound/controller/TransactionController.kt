@@ -1,9 +1,21 @@
 package com.lagotech.fintrack.adapters.inbound.controller
 
+import com.lagotech.fintrack.application.exception.ResourceNotFoundException
+import com.lagotech.fintrack.application.extension.TransactionMapper
+import com.lagotech.fintrack.application.request.TransactionRequest
+import com.lagotech.fintrack.application.response.TransactionResponse
 import com.lagotech.fintrack.domain.service.BankAccountService
-import com.lagotech.fintrack.domain.service.TransactionCategoryService
 import com.lagotech.fintrack.domain.service.TransactionService
+import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
+import jakarta.validation.Valid
+import org.springframework.data.domain.Pageable
+import org.springframework.hateoas.EntityModel
+import org.springframework.hateoas.PagedModel
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @Tag(name = "Transações", description = "Gerencia as transações financeiras")
@@ -11,110 +23,89 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/transaction")
 class TransactionController(
     private val service: TransactionService,
-    private val categoryService: TransactionCategoryService,
-    private val accountService: BankAccountService
+    private val bankAccountService: BankAccountService
 ) {
 
-    @GetMapping
-    fun getBudget() : String{
-        return "Seja bem vindo"
-    }
-
-   /* @Operation(
-        summary = "Criar uma nova transação",
-        description = "Salva uma nova transação no sistema."
-    )
+    @Operation(summary = "Criar uma nova transação")
     @PostMapping
-    fun createTransaction(@Valid @RequestBody transactionDTO: TransactionDTO): ResponseEntity<TransactionDTO> {
+    fun save(@Valid @RequestBody request: TransactionRequest): ResponseEntity<TransactionResponse> {
 
-        categoryService.findById(transactionDTO.category.id)
-            .orElseThrow { ResourceNotFoundException("A Category with id ${transactionDTO.category.id} not found") }
+        val bankAccount = bankAccountService.findById(request.bankAccountId)
+            .orElseThrow { ResourceNotFoundException("A Account Bank with id ${request.bankAccountId} not found") }
 
-        accountService.findById(transactionDTO.bankAccount.id)
-            .orElseThrow { ResourceNotFoundException("A Account Bank with id ${transactionDTO.bankAccount.id} not found") }
+        val response = service.save(TransactionMapper.toEntity(bankAccount, request))
 
-        val createdTransaction = service.save(transactionDTO)
-
-        val response = createdTransaction.add(
-            linkTo(TransactionController::class.java).slash(createdTransaction.id).withSelfRel()
-        )
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(response)
+        return ResponseEntity.status(HttpStatus.CREATED).body(TransactionMapper.toResponse(response))
     }
 
-    @Operation(
-        summary = "Listar transações",
-        description = "Listar todas as transações."
-    )
-    @GetMapping
-    fun findAll(
-        @RequestParam(value = "page", defaultValue = "0") page: Int,
-        @RequestParam(value = "limit", defaultValue = "2") limit: Int,
-        @RequestParam(value = "sort", defaultValue = "asc") sort: String,
-    ): ResponseEntity<PagedModel<EntityModel<TransactionDTO>>> {
-
-        val sortDirection: Sort.Direction =
-            if("desc".equals(sort, ignoreCase = true)) Sort.Direction.DESC else Sort.Direction.ASC
-        val pageable: Pageable = PageRequest.of(page, limit, Sort.by(sortDirection, "transactionType"));
-        val transaction = service.findAll(pageable)
-
-        transaction.forEach { transactionDTO ->
-            transactionDTO.add(linkTo(TransactionController::class.java).slash(transactionDTO.content?.id).withSelfRel())
-        }
-        return ResponseEntity.status(HttpStatus.OK).body(transaction)
+    @Operation(summary = "Listar transações por usuário")
+    @GetMapping("/user/{userId}")
+    fun findByUserId(
+        @PathVariable userId: Long,
+        pageable: Pageable
+    ): ResponseEntity<PagedModel<EntityModel<TransactionResponse>>> {
+        return ResponseEntity.ok(service.findByUserId(userId, pageable))
     }
 
-    @Operation(
-        summary = "Buscar transação por ID",
-        description = "Retorna uma transação específica pelo seu ID",
-    )
+    @Operation(summary = "Buscar transação por ID")
     @GetMapping("/{transactionId}")
     fun findById(
-        @Parameter(description = "ID da transação a ser buscada", example = "1")
         @PathVariable("transactionId") transactionId: Long
-    ): ResponseEntity<TransactionDTO> {
+    ): ResponseEntity<TransactionResponse> {
+
+        if (transactionId <= 0) {
+            throw ResourceNotFoundException("Id invalido")
+        }
 
         val transaction = service.findById(transactionId)
+            .orElseThrow { ResourceNotFoundException("Id não encontrado") }
 
-        val response = transaction.add(linkTo(TransactionController::class.java).slash(transaction.id).withSelfRel())
-
-        return ResponseEntity.status(HttpStatus.OK).body(response)
+        return ResponseEntity.status(HttpStatus.OK).body(TransactionMapper.toResponse(transaction))
     }
 
-//    @Operation(
-//        summary = "Atualizar transação",
-//        description = "Atualizar transação pelo id informado."
-//    )
-//    @PutMapping("/{transactionId}")
-//    fun updatedTransaction(
-//        @PathVariable("transactionId") transactionId: Long,
-//        @Valid @RequestBody transactionDTO: TransactionDTO
-//    ): ResponseEntity<TransactionDTO> {
-//
-//        if (transactionId <= 0) {
-//            throw IllegalArgumentException("ID must be provided and greater than zero")
-//        }
-//
-//        val updatedTransaction = service.update(transactionId, transactionDTO)
-//
-//        updatedTransaction.add(linkTo(methodOn(TransactionController::class.java).findById(transactionId)).withSelfRel())
-//
-//        return ResponseEntity.ok(updatedTransaction)
-//    }
+    @Operation(summary = "Atualizar transação")
+    @PutMapping("/{transactionId}")
+    fun update(
+        @PathVariable("transactionId") transactionId: Long,
+        @Valid @RequestBody request: TransactionRequest
+    ): ResponseEntity<TransactionResponse> {
 
-    @Operation(
-        summary = "Remover transação",
-        description = "Remover transação pelo id informado."
-    )
+        if (transactionId <= 0) {
+            throw IllegalArgumentException("ID must be provided and greater than zero")
+        }
+
+        val transaction = service.findById(transactionId)
+            .orElseThrow { ResourceNotFoundException("Id inexistente") }
+
+        val bankAccount = bankAccountService.findById(request.bankAccountId)
+            .orElseThrow { ResourceNotFoundException("A Account Bank with id ${request.bankAccountId} not found") }
+
+        transaction.status = request.status
+        transaction.type = request.type
+        transaction.bankAccount = bankAccount
+        transaction.amount = request.amount
+        transaction.dueDate = request.dueDate
+
+        val response = service.update(transaction)
+
+        response.add(linkTo(methodOn(TransactionController::class.java).findById(transactionId)).withSelfRel())
+
+        return ResponseEntity.ok(response)
+    }
+
+    @Operation(summary = "Remover transação")
     @DeleteMapping("/{transactionId}")
-    fun deleteTransaction(@PathVariable("transactionId") transactionId: Long): ResponseEntity<Unit> {
+    fun delete(@PathVariable("transactionId") transactionId: Long): ResponseEntity<Unit> {
+
         if (transactionId <= 0) {
             throw IllegalArgumentException("ID must be greater than zero")
         }
 
-        service.delete(transactionId)
+        val transaction = service.findById(transactionId)
+            .orElseThrow { ResourceNotFoundException("Id inexistente") }
+
+        service.delete(transaction)
 
         return ResponseEntity.noContent().build()
     }
-    */
 }
